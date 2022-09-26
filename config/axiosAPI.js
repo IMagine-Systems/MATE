@@ -128,6 +128,25 @@ export function createTicketAxios(
 }
 
 // 카풀 티켓 리스트 조회
+/*
+    티켓 상세 정보 조회 res :  Object {
+    "endArea": Object {
+        "name": "경운대",
+    },
+    "id": 5,
+    "kakaoOpenChatTitle": null,
+    "kakaoOpenChatUrl": "test url",
+    "passengerList": null,
+    "profileImage": null,
+    "recruitPerson": "3",
+    "startArea": Object {
+        "name": "인동",
+    },
+    "startDtime": "202209241530",
+    "status": "BEFORE",
+    "ticketPrice": null,
+    }
+*/
 export function getTicketListAxios(token) {
     return axios.get(
         `${JANG_BASE_URL}/ticket/list`, {
@@ -202,7 +221,7 @@ export function deleteTicketAxios(token, ticketId) {
       ]
     */
 
-// 탑승 목록 조회
+// 탑승 목록 조회 uri 변경
 export function getBordingListAxios(token) {
   return axios.get(`${JANG_BASE_URL}/ticket/list`, {
     headers: {
