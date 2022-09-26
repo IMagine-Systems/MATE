@@ -10,6 +10,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SCREEN_HEIGHT } from '@gorhom/bottom-sheet';
 import Svg, { Path } from 'react-native-svg';
 import axios from 'axios';
+import { getMemberAxios, getTicketListAxios } from '../../config/axiosAPI';
 
 export default function Main({ navigation, route }) {
 
@@ -17,14 +18,15 @@ export default function Main({ navigation, route }) {
     const [ areaData, setAreaData ] = useState();
     const [ carpoolList, setCarpoolList ] = useState();
     const [ memberData, setMemberData ] = useState();
-
+    const [ loading, setLoading ] = useState(true);
     // route params 상태 유지.
-    //const [ params, setParams ] = useState(route.params);
-    console.log(route.params);
-    const params = useRef(route.params);
+    //const [ paramsTest, setParamsTest ] = useState("사용자토큰");
+    
+    // 사용자 토큰 값 useRef -> state로 관리 가능함.
+
+    const userTokenRef = useRef(route.params.token); // member token으로 상태관리 할 예정.
+    
     const isFocused = useIsFocused();
-
-
     /*
     const [ testList, setTestList ] = useState([{
         startArea: "인동",
@@ -72,26 +74,21 @@ export default function Main({ navigation, route }) {
         </TouchableOpacity>
     ))
    */
+
+    // 임시로 토큰 변수 선언 하였다. -> userTokenRef 이용 하면 된다.
+
+    // const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQxMDk0MDAsImV4cCI6MTY2NDE5NTgwMH0.Go0keCeAKi3fTzsB3RNhHMVBAZupn_MCkuT0FC-vbnXYRjSB0ik88xbUGzWovx-Bgx4x8if9LfwRbMFIb-V0GA';
     useEffect(async () => {
         
-        const auth = { 
-            "Authorization": `Bearer ${params.current.token}`
-        };
-        
-        console.log("Authorization console : ", auth);
-
-        const res = await axios.get(`http://www.godseun.com/member`, {
-            headers: { 
-                "Authorization": `Bearer ${params.current.token}`,
-            },                                                    
-        }).then(res => {
-            console.log("main promise res : ", res);
-            setMemberData(res);
+        console.log("사용자 토큰 확인 : ", userTokenRef.current)
+        const res = getMemberAxios(userTokenRef.current)
+        .then(res => {
+            console.log("main promise res : ", res.data);
+            setMemberData(res.data);
         })
         .catch((e) => console.warn(e));
 
-
-        /*
+        /*  
         
         // 1. 지역 설정 API
         // 지역설정 api 호출 부분 area: "인동"(default 값)
@@ -107,6 +104,14 @@ export default function Main({ navigation, route }) {
         */
 
         // 2. 카풀리스트
+        getTicketListAxios(userTokenRef.current)
+        .then(res => {
+            console.log("티켓 리스트 조회 res : ", res.data);
+            setCarpoolList(res.data);
+            setLoading(false);
+        })
+        .catch(error => console.warn(error));
+
         /*
         const carpoolListRes = axios.get('카풀리스트 url');
         setCarpoolList(carpoolListRes);
@@ -114,7 +119,7 @@ export default function Main({ navigation, route }) {
 
         // 3. 예약된 카풀 어떤 url에 있는 곳인지 모르겠음. 사용자(member)테이블에 예약된 카풀이 있는지 관련 멤버가 있어야 될것 같다.
         
-    }, []);
+    }, [isFocused]);
 
     const [ ticketList, setTicketList ] = useState(10);
     return (
@@ -126,7 +131,7 @@ export default function Main({ navigation, route }) {
                 <View style={{ width: 120 }} />
                 <View style={{ flexDirection: 'row', alignItems: 'center'}}>
                     <TouchableOpacity
-                        onPress={() => navigation.navigate("ProfileScreen", params.current)}
+                        onPress={() => navigation.navigate("ProfileScreen", route.params)}
                     >
                         <Ionicons name='md-person-circle-outline' size={30} color='#909090' />
                     </TouchableOpacity>                
@@ -143,10 +148,13 @@ export default function Main({ navigation, route }) {
             {
                 (
                     () => {
+                        // <Text style={styles.local_name}>{params.current.area ? params.current.area : "인동"}</Text>
+                        //<Text style={styles.local_name}>{memberData.area !== null ? memberData.area : "인동"}</Text>                                                
+
                         if (ticketList === 0) {
                             return (
                                 <View>
-                                    <View style={{ paddingLeft: 20, paddingRight: 20 }}>
+                                    <View style={{ paddingLeft: 20, paddingRight: 20 }}> 
                                         <TouchableOpacity
                                             onPress={() => navigation.navigate('LocalSettingFirst', params.current)}
                                             style={styles.local_setting}>
@@ -157,17 +165,14 @@ export default function Main({ navigation, route }) {
                                                     color='#007AFF'
                                                 />
                                                 <Text style={styles.local_display_text}>지역설정</Text>
-                                                <Text style={styles.local_name}>{params.current.area ? params.current.area : "인동"}</Text>
+                                                <Text style={styles.local_name}>인동</Text>                                                
                                                 <AntDesign name='right' size={24} color='#909090' />
                                             </View>
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             style={styles.carpool_section}
                                             onPress={() =>
-                                                navigation.navigate('TicketScreen', {
-                                                    firstLocal: '인동',
-                                                    secondLocal: '경운대학교'
-                                                })
+                                                navigation.navigate('TicketScreen', route.params)
                                             }>
                                             <View style={styles.local_display}>
                                                 <Ionicons name='car-outline' size={24} color='#007AFF' />
@@ -218,17 +223,14 @@ export default function Main({ navigation, route }) {
                                                     color='#007AFF'
                                                 />
                                                 <Text style={styles.local_display_text}>지역설정</Text>
-                                                <Text style={styles.local_name}>{params.current.area ? params.current.area : "인동"}</Text>
+                                                <Text style={styles.local_name}>인동</Text>
                                                 <AntDesign name='right' size={24} color='#909090' />
                                             </View>
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             style={styles.carpool_section}
                                             onPress={() =>
-                                                navigation.navigate('TicketScreen', {
-                                                    firstLocal: params.current.area,
-                                                    secondLocal: '경운대학교'
-                                                })
+                                                navigation.navigate('TicketScreen', route.params)
                                             }>
                                             <View style={styles.local_display}>
                                                 <Ionicons name='car-outline' size={24} color='#007AFF' />
@@ -258,168 +260,33 @@ export default function Main({ navigation, route }) {
                                         </View>
                                     </View>
                                     <View style={styles.carpool_list}>
-                                        <TouchableOpacity
-                                            onPress={() => navigation.navigate('TicketDetail')}
-                                            style={styles.carpool_list_ticket_display}>
-                                            <View style={styles.profile_image}></View>
-                                            <View style={styles.carpool_list_ticket_display_title}>
-                                                <View style={styles.carpool_list_ticket_content}>
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Text>안동 출발</Text>
-                                                        <Text>{' / '}</Text>
-                                                        <Text style={{ color: '#007AFF', fontWeight: '600' }}>
-                                                            무료
-                                                        </Text>
+                                        {
+                                            loading === false ? carpoolList.map(item => (
+                                                <TouchableOpacity
+                                                    onPress={() => navigation.navigate('TicketDetail', {...item, ["userData"] : route.params})}
+                                                    style={styles.carpool_list_ticket_display}>
+                                                    <View style={styles.profile_image}></View>
+                                                    <View style={styles.carpool_list_ticket_display_title}>
+                                                        <View style={styles.carpool_list_ticket_content}>
+                                                            <View style={{ flexDirection: 'row' }}>
+                                                                <Text>{item.startArea.name}</Text>
+                                                                <Text>{' / '}</Text>
+                                                                <Text style={{ color: '#007AFF', fontWeight: '600' }}>
+                                                                    {item.ticketPrice ? item.ticketPrice : "무료"}
+                                                                </Text>
+                                                            </View>
+                                                            <Text style={styles.carpool_list_ticket_time}>
+                                                                {item.startDtime}
+                                                            </Text>
+                                                        </View>
+                                                        <View style={styles.carpool_list_passenger_chip}>
+                                                            <Text style={styles.carpool_list_passenger_chip_text}>{item.recruitPerson}/4</Text>
+                                                        </View>
                                                     </View>
-                                                    <Text style={styles.carpool_list_ticket_time}>
-                                                        8월 24일, 오전 8시 30분
-                                                    </Text>
-                                                </View>
-                                                <View style={styles.carpool_list_passenger_chip}>
-                                                    <Text style={styles.carpool_list_passenger_chip_text}>1/4</Text>
-                                                </View>
-                                            </View>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            onPress={() => navigation.navigate('TicketDetail')}
-                                            style={styles.carpool_list_ticket_display}>
-                                            <View style={styles.profile_image}></View>
-                                            <View style={styles.carpool_list_ticket_display_title}>
-                                                <View style={styles.carpool_list_ticket_content}>
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Text>안동 출발</Text>
-                                                        <Text>{' / '}</Text>
-                                                        <Text style={{ color: 'red', fontWeight: '600' }}>유료</Text>
-                                                    </View>
-                                                    <Text style={styles.carpool_list_ticket_time}>
-                                                        8월 24일, 오전 11시
-                                                    </Text>
-                                                </View>
-                                                <View style={styles.carpool_list_passenger_chip}>
-                                                    <Text style={styles.carpool_list_passenger_chip_text}>1/4</Text>
-                                                </View>
-                                            </View>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            onPress={() => navigation.navigate('TicketDetail')}
-                                            style={styles.carpool_list_ticket_display}>
-                                            <View style={styles.profile_image}></View>
-                                            <View style={styles.carpool_list_ticket_display_title}>
-                                                <View style={styles.carpool_list_ticket_content}>
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Text>경운대학교 출발</Text>
-                                                        <Text>{' / '}</Text>
-                                                        <Text style={{ color: 'red', fontWeight: '600' }}>유료</Text>
-                                                    </View>
-                                                    <Text style={styles.carpool_list_ticket_time}>
-                                                        8월 25일, 오후 6시
-                                                    </Text>
-                                                </View>
-                                                <View style={styles.carpool_list_passenger_chip_full}>
-                                                    <Text style={styles.carpool_list_passenger_chip_text}>4/4</Text>
-                                                </View>
-                                            </View>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            onPress={() => navigation.navigate('TicketDetail')}
-                                            style={styles.carpool_list_ticket_display}>
-                                            <View style={styles.profile_image}></View>
-                                            <View style={styles.carpool_list_ticket_display_title}>
-                                                <View style={styles.carpool_list_ticket_content}>
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Text>경운대학교 출발</Text>
-                                                        <Text>{' / '}</Text>
-                                                        <Text style={{ color: 'red', fontWeight: '600' }}>유료</Text>
-                                                    </View>
-                                                    <Text style={styles.carpool_list_ticket_time}>
-                                                        8월 25일, 오후 6시
-                                                    </Text>
-                                                </View>
-                                                <View style={styles.carpool_list_passenger_chip_full}>
-                                                    <Text style={styles.carpool_list_passenger_chip_text}>4/4</Text>
-                                                </View>
-                                            </View>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            onPress={() => navigation.navigate('TicketDetail')}
-                                            style={styles.carpool_list_ticket_display}>
-                                            <View style={styles.profile_image}></View>
-                                            <View style={styles.carpool_list_ticket_display_title}>
-                                                <View style={styles.carpool_list_ticket_content}>
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Text>경운대학교 출발</Text>
-                                                        <Text>{' / '}</Text>
-                                                        <Text style={{ color: 'red', fontWeight: '600' }}>유료</Text>
-                                                    </View>
-                                                    <Text style={styles.carpool_list_ticket_time}>
-                                                        8월 25일, 오후 6시
-                                                    </Text>
-                                                </View>
-                                                <View style={styles.carpool_list_passenger_chip_full}>
-                                                    <Text style={styles.carpool_list_passenger_chip_text}>4/4</Text>
-                                                </View>
-                                            </View>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            onPress={() => navigation.navigate('TicketDetail')}
-                                            style={styles.carpool_list_ticket_display}>
-                                            <View style={styles.profile_image}></View>
-                                            <View style={styles.carpool_list_ticket_display_title}>
-                                                <View style={styles.carpool_list_ticket_content}>
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Text>경운대학교 출발</Text>
-                                                        <Text>{' / '}</Text>
-                                                        <Text style={{ color: 'red', fontWeight: '600' }}>유료</Text>
-                                                    </View>
-                                                    <Text style={styles.carpool_list_ticket_time}>
-                                                        8월 25일, 오후 6시
-                                                    </Text>
-                                                </View>
-                                                <View style={styles.carpool_list_passenger_chip_full}>
-                                                    <Text style={styles.carpool_list_passenger_chip_text}>4/4</Text>
-                                                </View>
-                                            </View>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            onPress={() => navigation.navigate('TicketDetail')}
-                                            style={styles.carpool_list_ticket_display}>
-                                            <View style={styles.profile_image}></View>
-                                            <View style={styles.carpool_list_ticket_display_title}>
-                                                <View style={styles.carpool_list_ticket_content}>
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Text>경운대학교 출발</Text>
-                                                        <Text>{' / '}</Text>
-                                                        <Text style={{ color: 'red', fontWeight: '600' }}>유료</Text>
-                                                    </View>
-                                                    <Text style={styles.carpool_list_ticket_time}>
-                                                        8월 25일, 오후 6시
-                                                    </Text>
-                                                </View>
-                                                <View style={styles.carpool_list_passenger_chip_full}>
-                                                    <Text style={styles.carpool_list_passenger_chip_text}>4/4</Text>
-                                                </View>
-                                            </View>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            onPress={() => navigation.navigate('TicketDetail')}
-                                            style={styles.carpool_list_ticket_display}>
-                                            <View style={styles.profile_image}></View>
-                                            <View style={styles.carpool_list_ticket_display_title}>
-                                                <View style={styles.carpool_list_ticket_content}>
-                                                    <View style={{ flexDirection: 'row' }}>
-                                                        <Text>경운대학교 출발</Text>
-                                                        <Text>{' / '}</Text>
-                                                        <Text style={{ color: 'red', fontWeight: '600' }}>유료</Text>
-                                                    </View>
-                                                    <Text style={styles.carpool_list_ticket_time}>
-                                                        8월 25일, 오후 6시
-                                                    </Text>
-                                                </View>
-                                                <View style={styles.carpool_list_passenger_chip_full}>
-                                                    <Text style={styles.carpool_list_passenger_chip_text}>4/4</Text>
-                                                </View>
-                                            </View>
-                                        </TouchableOpacity>
+                                                </TouchableOpacity>
+                                            )) : null
+                                        }
+                                        
                                     </View>
                                 </ScrollView>
                             );
@@ -442,7 +309,7 @@ export default function Main({ navigation, route }) {
             <View style={styles.footer}>
                 <TouchableOpacity
                     style={styles.footer_button}
-                    onPress={() => navigation.navigate('BordingList')}>
+                    onPress={() => navigation.navigate('BordingList', route.params)}>
                     <Text
                         style={{
                             color: '#FFFFFF',

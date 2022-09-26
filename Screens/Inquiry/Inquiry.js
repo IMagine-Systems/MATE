@@ -1,24 +1,22 @@
 import { AntDesign } from '@expo/vector-icons';
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { readInquiryAxios } from '../../config/axiosAPI';
 
 export default function Inquiry({ navigation }) {
     const [ inquiryData, setInquiryData ] = useState();
-    const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQwMDc1MjIsImV4cCI6MTY2NDA5MzkyMn0.WG6xx-sqh9ljJKoPyDioJldK4LjwOnWsjkewcvB998aas1l3_7JWelnuHGPvgny6vLK1GFO8TNh4AdIcsizbhA'
-    
+    const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQxMTkyMTgsImV4cCI6MTY2NDIwNTYxOH0.Bj8EXmegwMJKNFLZOfo5tUQbU19DbTJTAyJMQNf9tkoi0osGn2NN8YwVCxet8liCjwN_--7hvq3nNaR_iKFGOg'                
+    // state
+    // QuestionBord API State
+    const [ questionBoardData, setQuestionBoardData ] = useState();
     
     useEffect(() => {
-        axios.get('http://3.37.159.244:8080/QuestionBoard' , { headers: {"Authorization" : `Bearer ${token}`} })
-            .then((res) => {
-                console.log("문의 데이터 : ", res);
-            })
-            .catch((error) => console.warn(error));
-
-        //const res = await axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    
-        //console.log("문의 데이터 res2: ", res2);
-        //setInquiryData(res1);    
+       readInquiryAxios(token)
+       .then((res) => {
+           console.log("문의 데이터 확인 : ", res.data);
+           setQuestionBoardData(res.data);
+       })
+       .catch((error) => console.warn(error));
     }, []);
 
     return (
@@ -30,21 +28,40 @@ export default function Inquiry({ navigation }) {
             </View>
             <Text style={styles.title}>문의내역</Text>
             {/* 문의내역 데이터 없을 경우 */}
+
             {/* <View style={[styles.item_view, styles.item_empty]}>
                 <Text style={styles.empty_inquiry}>최근 문의 내역이 없어요</Text>
             </View> */}
-            <View style={[styles.item_view, styles.item_exist]}>
-                <View style={styles.item_wrapper}>
-                    <Text style={styles.item_date}>22.08.01</Text>
-                    <Text style={styles.item_title}>오류 신고합니다.</Text>
-                    <Text>왜 와이파이에서만 접속되죠? 데이터로는 접속이 불가해요.</Text>
-                </View>
-                <View style={styles.item_wrapper}>
-                    <Text style={styles.item_date}>22.08.01</Text>
-                    <Text style={styles.item_title}>오류 신고합니다.</Text>
-                    <Text>왜 와이파이에서만 접속되죠? 데이터로는 접속이 불가해요.</Text>
-                </View>
-            </View>
+
+            {
+                (
+                    () => {
+                        if (questionBoardData) {
+                            console.log("1",questionBoardData)
+                            return (
+                                <View style={[styles.item_view, styles.item_exist]}>
+                                    {
+                                        questionBoardData.map(data => (                                            
+                                            <View style={styles.item_wrapper}>
+                                                <Text style={styles.item_date}>{`${data.createDate.slice(0,10).split('-')[0]}.${data.createDate.slice(0,10).split('-')[1]}.${data.createDate.slice(0,10).split('-')[2]}`}</Text>
+                                                <Text style={styles.item_title}>{`${data.title}`}</Text>
+                                                <Text>{data.content}</Text>
+                                            </View>                                                                                          
+                                        ))
+                                    }
+                                </View>
+                            );
+                        } else {
+                            return (
+                                <View style={[styles.item_view, styles.item_empty]}>
+                                    <Text style={styles.empty_inquiry}>최근 문의 내역이 없어요</Text>
+                                </View>
+                            );
+                        }
+                    }
+                )
+                ()
+            }
         </View>
     );
 }

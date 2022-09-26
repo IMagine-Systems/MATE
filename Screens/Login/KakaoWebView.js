@@ -2,7 +2,6 @@
 import { useEffect, useState, useRef } from "react";
 import { View } from 'react-native'
 import { WebView } from 'react-native-webview';
-import axios from "axios";
 
 export default function KakaoWebView({navigation}) {
 
@@ -38,7 +37,7 @@ export default function KakaoWebView({navigation}) {
         }}
         originWhitelist={['*']}
         scalesPageToFit={false}
-        javaScriptEnabled={true}
+        javaScriptEnabled={true} // 235fc02960c0239e43b70d9e3fd2c9e6(파트장님)  8763097c83420044eeea901b962072ab(재용 개발자)
         source={{uri : 'https://kauth.kakao.com/oauth/authorize?client_id=8763097c83420044eeea901b962072ab&redirect_uri=http://www.godseun.com/kakaoLoginTo&response_type=code'}}        
         onHttpError={(e) => console.log("onHttpError : ", e)}
       />              

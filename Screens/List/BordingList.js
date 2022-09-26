@@ -1,6 +1,6 @@
 // 학번로그인 -> 회원가입 버튼 클릭하면 회원가입 페이지 화면으로 넘어간다.
 import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, Dimensions, Alert } from "react-native";
-import React, { useState, } from 'react';
+import React, { useEffect, useRef, useState, } from 'react';
 
 // 아이콘
 import { AntDesign } from '@expo/vector-icons';
@@ -17,8 +17,28 @@ import Svg, { Path, G, Mask, Rect } from "react-native-svg";
 
 // 클립보드
 import * as Clipboard from 'expo-clipboard';
+import axios from "axios";
+import { deleteTicketAxios, getBordingListAxios } from "../../config/axiosAPI";
 
 export default function BordingList({navigation, route}) {
+
+    // useRef
+    const userTokenRef = useRef(route.params.token);
+    const [ ticketList, setTicketList ] = useState();
+    //const ticketListRef = useRef();
+
+    const [ loading, setLoading ] = useState(true);
+
+    useEffect(async () => {                
+        getBordingListAxios(userTokenRef.current)
+        .then((res) => {
+            console.log("탑승리스트 res : ", res.data)
+            setTicketList(res.data);
+            //ticketListRef.current = res.data;
+            setLoading(false);
+        })        
+        .catch((error) => console.warn(error));
+    }, []);
 
     // state
     const [copiedText, setCopiedText] = React.useState('');
@@ -26,6 +46,8 @@ export default function BordingList({navigation, route}) {
     const deviceWidth = Dimensions.get("window").width;
     const deviceHeight = Dimensions.get("window").height;
 
+    const token = `eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQxMDk0MDAsImV4cCI6MTY2NDE5NTgwMH0.Go0keCeAKi3fTzsB3RNhHMVBAZupn_MCkuT0FC-vbnXYRjSB0ik88xbUGzWovx-Bgx4x8if9LfwRbMFIb-V0GA`;
+    
     // font 설정
     let [ fontLoaded ] = useFonts({
         NotoSansKR_500Medium,
@@ -50,7 +72,15 @@ export default function BordingList({navigation, route}) {
             {
                 text: '삭제',
                 onPress: () => {
-                    navigation.navigate('Main');
+                    
+                    console.log("ticket id : ", ticketList);
+                    deleteTicketAxios(userTokenRef.current, 3)
+                    .then(res => {
+                        console.log("ticket delecte res : ", res);
+                        navigation.navigate('Main', route.params);                        
+                    })
+                    .catch(error => console.warn(error));
+                    
                 },
                 style: 'destructive'
             }
@@ -85,6 +115,7 @@ export default function BordingList({navigation, route}) {
         alert("오픈채팅 링크 복사 하였습니다.")
     };
 
+
     return (
         <View 
             style={{flex: 1, backgroundColor: "#FFFFFF", }}
@@ -94,7 +125,7 @@ export default function BordingList({navigation, route}) {
                     <View style={styles.navbar}>
                         <TouchableOpacity 
                             onPress={() => {
-                                    navigation.navigate("Main");
+                                    navigation.navigate("Main", route.params);
                                 }
                             }
                             style={styles.backIcon}

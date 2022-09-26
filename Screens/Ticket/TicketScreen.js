@@ -1,6 +1,6 @@
 // 학번로그인 -> 회원가입 버튼 클릭하면 회원가입 페이지 화면으로 넘어간다.
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Platform, Dimensions, Image } from "react-native";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView } from "react-native";
 // 아이콘
 import { AntDesign } from '@expo/vector-icons'
@@ -15,6 +15,8 @@ import SelectList from 'react-native-dropdown-select-list'
 import { useFonts, NotoSansKR_400Regular, NotoSansKR_500Mediu, NotoSansKR_100Thin, NotoSansKR_300Light, NotoSansKR_500Medium, NotoSansKR_700Bold, NotoSansKR_900Black, } from "@expo-google-fonts/noto-sans-kr";
 // datetimepicker 모듈
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import axios from "axios";
+import { createTicketAxios, getMemberAxios, setTicketAxios } from "../../config/axiosAPI";
 
 export default function TicketScreen({navigation, route}) {
 
@@ -32,8 +34,10 @@ export default function TicketScreen({navigation, route}) {
     const [ selectToggle, setSelectToggle ] = useState(["무료"]);
     const selectToggleList = ["무료", "유료"];
 
-    const localData = [route.params.firstLocal, "경운대학교"];
+    const [ localData, setLocalData ] = useState([]);
 
+    //const localData = [route.params.area.name, "경운대학교"];
+    //const localData = ["인동", "경운대학교"];
     // 입력창 state
     const [ pensingerCount, setPesingerCount ] = useState("");
 
@@ -51,6 +55,18 @@ export default function TicketScreen({navigation, route}) {
     // 인원수 
     const recruitCount = ["1 인", "2 인", "3 인"];
     const [ selectRecruitCount, setSelectRecruitCount ] = useState('');
+
+    // useRef 
+    const userTokenRef = route.params.token;
+
+    useEffect(() => {
+        getMemberAxios(userTokenRef)
+        .then(res => {
+            console.log("ticke screen member get : ", res.data);
+            setLocalData([res.data.area.name, "경운대학교"]);
+        })
+        .catch((error) => console.warn(error));
+    }, []);
 
     const showDatePicker = () => { 
         setDatePickerVisibility(true);
@@ -124,7 +140,27 @@ export default function TicketScreen({navigation, route}) {
     const deviceWidth = Dimensions.get("window").width;
     const deviceHeight = Dimensions.get("window").height;
 
+    console.log("티켓 생성 받은 데이터 : ", route.params);
 
+    /* API
+        “member_id”, string, 멤버의 일련번호
+        “status”, string, 출발 전 이니까 BEFORE 보내주면 됨
+        “start_area” , string , 출발지
+        “end_area” , string , 도착지
+        “start_dtime”, String, 출발시간 (ex) 202209241530 
+        “kakao_open_chat_url” , string , 카카오톡 링크
+        “recruit_person” , string , 탑승인원
+
+        “memberId”, string, 멤버의 일련번호
+        “status”, string, 출발 전 이니까 BEFORE 보내주면 됨
+        “startArea” , string , 출발지
+        “endArea” , string , 도착지
+        “startDtime”, String, 출발시간 (ex) 202209241530 
+        “kakaoOpenChatUrl” , string , 카카오톡 링크
+        “recruitPerson” , string , 탑승인원
+    */
+
+    const token = `eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQxMDk0MDAsImV4cCI6MTY2NDE5NTgwMH0.Go0keCeAKi3fTzsB3RNhHMVBAZupn_MCkuT0FC-vbnXYRjSB0ik88xbUGzWovx-Bgx4x8if9LfwRbMFIb-V0GA`;
     return (
         <KeyboardAvoidingView 
             style={{flex: 1, backgroundColor: "#F5F5F5", }}
@@ -145,7 +181,7 @@ export default function TicketScreen({navigation, route}) {
                                         return prev;
                                     });
                                 } else {
-                                    navigation.navigate("Main");
+                                    navigation.navigate("Main", route.params);
                                 }
                             }}
                             style={{width: 35, height: 35, justifyContent: 'center'}}
@@ -393,9 +429,15 @@ export default function TicketScreen({navigation, route}) {
                                     } else {
                                         return (
                                             <TouchableOpacity 
-                                                onPress={() => {
+                                                onPress={async () => {
                                                     if (openChatText !== "" && selectRecruitCount !== "") {
-                                                        navigation.navigate("BordingList") 
+                                                        createTicketAxios(userTokenRef, "1", "BEFORE", "GYUNGOON", "INDONG", "202209262335", "test url", "2")
+                                                        .then(res => {
+                                                            console.log("티켓 생성 res : ", res);
+                                                            navigation.navigate("BordingList", route.params);
+                                                        })
+                                                        .catch(error => console.warn(error));
+                                                        
                                                     } else {
                                                         alert("입력 안한 항목이 있습니다.")
                                                     }

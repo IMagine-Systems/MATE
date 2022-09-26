@@ -10,37 +10,90 @@ import Svg, { Path } from "react-native-svg";
 // 폰트
 import { useFonts, NotoSansKR_400Regular, NotoSansKR_500Mediu, NotoSansKR_100Thin, NotoSansKR_300Light, NotoSansKR_500Medium, NotoSansKR_700Bold, NotoSansKR_900Black, } from "@expo-google-fonts/noto-sans-kr";
 import axios from "axios";
+import { SafeAreaFrameContext } from "react-native-safe-area-context";
+import { getProfileAxios, getProfileImgAxios, updateProfileAxios } from "../../config/axiosAPI";
 
-export default function ProfileUpdateScreen({navigation}) {
+export default function ProfileUpdateScreen({navigation, route}) {
+    
+    // http://www.godseun.com/member/profile/2a2b73fecb5c808dba3d64d861bb7e91.jpeg (GET 요청)
+    
+    const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQxMjc0MzUsImV4cCI6MTY2NDIxMzgzNX0.mxtMKy-xVFF-DS--JxTcQpW1ZF9clDkQcxJbWR6Uvc_lQoIuXy2q8fTjpzH9fq6ROiW_AbRvQrdJH6sLZu0laA';
+    
+    const [ memberData, setMemberData ] = useState();
+    
+    // 드라이버 패신저 state
+    const [ selectDriverPesinger, setSelectDriverPesinger ] = useState([]);
+    
+    const selectDriverPesingerList = ["드라이버", "패신저"];
+    const tempAPI = useRef({});
     
     
-    useEffect(async () => {
-        const getRes = await axios.get(`http://3.37.159.244:8080/member/new`);              
-        console.log("user res : ", getRes);
-    }, []);
-
     // 학번, 학과 state
     const [ studentId, setStudentId ] = useState("");
     const [ department, setDepartment ] = useState("");
-
+    
     // 등교 데이터 state
     const [ goingSchoolDays, setGoingSchoolDays ] = useState([]);
     const days = ["월", "화", "수", "목", "금"];
-
-    // 드라이버 패신저 state
-    const [ selectDriverPesinger, setSelectDriverPesinger ] = useState(["드라이버"]);
-    const selectDriverPesingerList = ["드라이버", "패신저"];
-
+    
+    
     // 이미지 state
     const [image, setImage] = useState(null);
     const [ uploading, setUploading ] = useState(false);
+    const [ profileImg, setProfileImg ] = useState();
 
+    
     // useRef 
     const studentIdRef = useRef("");
     const departmentRef = useRef("");
     const goingSchoolDaysRef = useRef([]);
     const authRef = useRef("");
     const profileImgUriRef = useRef("");
+    const memberDataRef = useRef();
+
+    // 로딩
+    const [ loading, setLoading ] = useState(true);
+
+    // FormData state
+    const [ formDataProfile, setFormDataProfile ] = useState({});
+    const formData = new FormData();
+
+    // 사용자 토큰 useRef
+    const userTokenRef = useRef(route.params.token);
+
+    
+    useEffect(async () => {
+        console.log("profile 수정 사용자 토큰 값 : ", userTokenRef.current);
+        /*
+        const getRes = await axios.get(`http://www.godseun.com/member`, { 
+            headers: {
+                Authorization: `Bearer ${userTokenRef.current}`, 
+            }
+        });         
+        */
+        getProfileAxios(userTokenRef.current)
+        .then((res) => {
+            console.log("마이페이지 수정 내정보 불러오기 res : ", res.data);
+            res.data.area = "INDONG";
+            setMemberData(res.data);
+            memberDataRef.current = res.data;
+            setGoingSchoolDays(res.data.memberTimeTable);
+            //tempAPI.current = res.data;
+            setLoading(false);
+        })       
+
+        getProfileImgAxios(userTokenRef.current)
+        .then((res) => console.log("자신의 프로필 이미지 불러오기 res : ", res))
+        .catch((error) => console.warn(error));
+        
+        //console.log("user profile img : ", getUserImgRes);
+        
+
+        // setProfileImg(getUserImgRes.data);
+
+        
+    
+    }, []);
 
     // 회원정보 객체 state
     const [ userData, setUserData ] = useState({
@@ -99,6 +152,13 @@ export default function ProfileUpdateScreen({navigation}) {
     
         if (!result.cancelled) {
           setImage(result.uri);
+
+          setFormDataProfile({
+            uri: result.uri,
+            type: "image/jpeg",
+            name: `test.jpeg`,
+          });
+
           user.profileImageURI = result.uri;
           profileImgUriRef.current = result.uri;
         
@@ -144,7 +204,7 @@ export default function ProfileUpdateScreen({navigation}) {
                 <View style={styles.header}>
                     <View>
                         <TouchableOpacity 
-                            onPress={() => navigation.navigate("ProfileScreen")}
+                            onPress={() => navigation.navigate("ProfileScreen", route.params)}
                             style={{width: 35, height: 35, justifyContent: 'center'}}
                         >                        
                             <AntDesign name="left" size={25} color="black" />                        
@@ -165,27 +225,42 @@ export default function ProfileUpdateScreen({navigation}) {
                         </View>
                         <View style={{alignItems: 'center'}}>
                             <View style={styles.select_container}>
-                                {
+                                {                                                            
                                     selectDriverPesingerList.map(selectData => {
-                                        const isSelected = selectDriverPesinger.includes(selectData);
-                                        return (
-                                            <TouchableOpacity
-                                                onPress={() => {
-                                                    setSelectDriverPesinger(([...prev]) => {
-                                                        const id = prev.indexOf(selectData)
-                                                        
-                                                        prev.splice(id, 1);
-                                                        prev.push(selectData);   
-                                                        user.auth = prev[0];     
-                                                        authRef.current = prev[0];                                                            
-                                                        return prev;
-                                                    });
-                                                }} 
-                                                style={isSelected ? styles.select_container_active_btn : styles.select_container_non_active_btn}
-                                            >
-                                                <Text style={isSelected ? {color: '#FFFFFF', fontFamily: 'NotoSansKR_700Bold'} : {color: '#007AFF', fontFamily: 'NotoSansKR_700Bold'}}>{selectData}</Text>
-                                            </TouchableOpacity>
-                                        );
+                                        if (loading === false) {                                            
+                                            //tempAPI.current.auth
+                                            //selectDriverPesinger.push(memberData.auth === "DRIVER" ? "드라이버" : "패신저");                                                                                              
+                                            console.log("1확인 : ", memberDataRef.current)
+                                            const strAuth = memberData.auth === "DRIVER" ? "드라이버" : "패신저";
+
+                                            const isSelected = strAuth === selectData;
+                                            return (
+                                                <TouchableOpacity
+                                                    onPress={() => {
+                                                        setSelectDriverPesinger(([...prev]) => {
+                                                            const id = prev.indexOf(selectData)
+                                                            
+                                                            prev.splice(id, 1);
+                                                            prev.push(selectData);  
+                                                            
+                                                            if (prev[0] === "드라이버") {
+                                                                memberData.auth = "DRIVER";                                                            
+                                                            } else {
+                                                                prev[0] = "패신저";
+                                                                memberData.auth = "PASSENGER";
+                                                            }
+                                                            
+                                                            user.auth = prev[0];     
+                                                            authRef.current = prev[0];                                                            
+                                                            return prev;
+                                                        });
+                                                    }} 
+                                                    style={isSelected ? styles.select_container_active_btn : styles.select_container_non_active_btn}
+                                                >
+                                                    <Text style={isSelected ? {color: '#FFFFFF', fontFamily: 'NotoSansKR_700Bold'} : {color: '#007AFF', fontFamily: 'NotoSansKR_700Bold'}}>{selectData}</Text>
+                                                </TouchableOpacity>
+                                            );
+                                        }
                                     })
                                 }
                             </View>
@@ -229,39 +304,89 @@ export default function ProfileUpdateScreen({navigation}) {
                             <Text style={styles.message_container_text}>9시까지 학교에 가야하는 날을 모두 선택해 주세요</Text>
                         </View>                       
                         
-                        <View style={{flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', marginTop: Platform.OS === "ios" ? 44 : 0}}>
-                            {
-                                days.map((day) => {
-                                    const isSelected = goingSchoolDays.includes(day);
-                                    console.log(isSelected);
-                                    return (                    
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                setGoingSchoolDays(([...prev]) => {
-                                                    const id = prev.indexOf(day);
-                                                    //console.log(id); // 날짜 있으면 id 값이 0, 없으면 -1(등교일 추가).
-                                                    if (id > -1) {
-                                                        prev.splice(id, 1);
-                                                    } else {
-                                                        prev.push(day);
-                                                       
-                                                        
-                                                        //console.log("등교일 입력후 userData 현황 : ", userData)
-                                                    }
-                                                    user.goingSchoolDays = prev;
-                                                    goingSchoolDaysRef.current = prev;
-                                                    return prev;                                        
-                                                });
-                                            }}
-                                            style={{ backgroundColor: isSelected ? "#007AFF" : "#FFFFFF", width: 35, height: 35, justifyContent: 'center', alignItems: 'center', borderRadius: isSelected ? 50 : 0}}                                                        
-                                        >
-                                            
-                                            <Text style={{color: isSelected ? "#FFFFFF" : "#989595", fontFamily: isSelected ? "NotoSansKR_700Bold" : "NotoSansKR_400Regular"}}>{day}</Text>                                    
-                                        </TouchableOpacity>                                    
-                                    )
-                                })
-                            }
-                        </View>
+                        <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-evenly",
+                      alignItems: "center",
+                      marginTop: Platform.OS === "ios" ? 44 : 0,
+                    }}
+                  >
+                    {days.map((day) => {
+                        if (loading === false) {
+                            const isSelected = memberData.memberTimeTable.filter((item) => {
+                              return item.dayCode === day;
+                            }).length;
+      
+                            console.log("확인 : ", isSelected);
+                            return (
+                              <TouchableOpacity
+                                onPress={() => {
+                                    setGoingSchoolDays(([...prev]) => {
+                                        console.log("prev : ", prev)
+                                        const id = prev.findIndex((days) => days.dayCode === day);
+                                        console.log(id);
+                                      //console.log(id); // 날짜 있으면 id 값이 0, 없으면 -1(등교일 추가).
+                                      if (id > -1) {
+                                        prev.splice(id, 1);
+                                        memberData.memberTimeTable = prev;
+                                        
+                                      } else {
+                                        prev.push({ dayCode: day });
+                                        console.log(prev);
+                                        setUserData((data) => ({
+                                          ...data,
+                                          ["memberTimeTable"]: prev,
+                                        }));
+                                        memberData.memberTimeTable = prev;
+                                    }
+                                /*
+                                  setGoingSchoolDays(([...prev]) => {
+                                      console.log("prev : ", prev)
+                                    const id = prev.findIndex((days) => days.dayCode === day);
+                                    console.log(id);
+                                    //console.log(id); // 날짜 있으면 id 값이 0, 없으면 -1(등교일 추가).
+                                    if (id > -1) {
+                                      prev.splice(id, 1);
+                                    } else {
+                                      prev.push({ dayCode: day });
+                                      console.log(prev);
+                                      setUserData((data) => ({
+                                        ...data,
+                                        ["memberTimeTable"]: prev,
+                                      }));
+      
+                                      //console.log("등교일 입력후 userData 현황 : ", userData)
+                                    }*/
+                                    return prev;
+                                  });
+                                }}
+                                style={{
+                                  backgroundColor: isSelected ? "#007AFF" : "#FFFFFF",
+                                  width: 35,
+                                  height: 35,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  borderRadius: isSelected ? 50 : 0,
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    color: isSelected ? "#FFFFFF" : "#989595",
+                                    fontFamily: isSelected
+                                      ? "NotoSansKR_700Bold"
+                                      : "NotoSansKR_400Regular",
+                                  }}
+                                >
+                                  {day}
+                                </Text>
+                              </TouchableOpacity>
+                            );
+                        } else {
+                            setGoingSchoolDays
+                        }
+                    })}
+                  </View>
                     </View>
                 </View>                                        
                 <View style={styles.footer}>
@@ -270,7 +395,7 @@ export default function ProfileUpdateScreen({navigation}) {
                             style={styles.button_container_next_button}
                             onPress={async () => {
                                 setUserData({
-                                    email : route.params.kakao_account.email,
+                                    email : '',
                                     studentId: studentId,
                                     department: department,
                                     goingSchoolDays: goingSchoolDays,
@@ -278,15 +403,36 @@ export default function ProfileUpdateScreen({navigation}) {
                                     profileImageURI: image,
                                 });
                                 
-                                const res = await axios.post(`http://3.37.159.244:8080/member/new`, {                                                                    
-                                    EMAIL: route.params.kakao_account.email,
-                                    STUDENT_ID: studentIdRef.current,
-                                    DEPARTMENT: departmentRef.current,
-                                    GOING_TO_SCHOOL_DAYS: goingSchoolDays.current,
-                                    AUTH: authRef.current,
-                                    PROFILE_IMAGE: profileImgUriRef.current,
-                               });          
-                               
+                                formData.append("image",formDataProfile);
+                                
+                                memberData.memberTimeTable = goingSchoolDays;
+
+                                formData.append("userData", { 
+                                    "string": JSON.stringify(memberData),
+                                    type: 'application/json'
+                                });
+               
+                                console.log("프로필 수정후 서버로 전송(확인용) : ", memberData);
+                                /*
+                                const res = await axios.post(
+                                    `http://www.godseun.com/member`,
+                                    formData,
+                                    {
+                                        headers: {            
+                                            Authorization: `Bearer ${token}`,
+                                            "content-type": "multipart/form-data",
+                                        },
+                                    }
+                                );*/
+                                
+                                updateProfileAxios(formData, userTokenRef.current)
+                                .then(res => console.log("프로필 수정후 서버로 전송 res : ", res))
+                                .catch(error => console.warn(error));
+
+
+                               // console.log("프로필 수정후 서버로 전송 res : ", res);
+                                
+
                                 //navigation.navigate("Main", userData);                        
                             }}
                         >

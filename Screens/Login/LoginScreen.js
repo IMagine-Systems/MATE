@@ -1,6 +1,6 @@
 // 학번 로그인 컴포넌트이다.
 import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback, Dimensions } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 // 외부 폰트 불러오는 모듈
 import { useFonts, Archivo_400Regular, Archivo_700Bold, Archivo_800ExtraBold } from '@expo-google-fonts/archivo';
 import { NotoSansKR_400Regular, NotoSansKR_500Mediu, NotoSansKR_100Thin, NotoSansKR_300Light, NotoSansKR_500Medium, NotoSansKR_700Bold, NotoSansKR_900Black, } from "@expo-google-fonts/noto-sans-kr";
@@ -18,26 +18,31 @@ import axios from 'axios';
   
   
   const LoginScreen = ({navigation, route}) => {
-    
+
     // state
     // MATE 회원자 인지 확인 하는 state
-    const [ memberCheck, setMemberCheck ] = useState(false);
-    
+    // 테스트용 state 
+    //const [ memberCheck, setMemberCheck ] = useState(true);
 
-    useEffect(async () => {
+    useEffect(() => {
       //fetchAPI();
       
       if (route.params && route.params.url) {
         //console.log(route.params.url);
         //console.log("kakao state data route : ", route.params);
-        const res = await axios.get(route.params.url.replace("LoginTo", "Login"));
-        console.log("백엔드로 부터 사용자 데이터 응답 : ", res.data);
-        if (res.data.member === false) {
-          navigation.navigate("SignUpScreen", res.data);
-        } else {
-          navigation.navigate("Main", res.data);
-        }        
+        axios.get(route.params.url.replace("LoginTo", "Login"))
+        .then((res) => {
+          console.log("백엔드로 부터 사용자 데이터 응답 : ", res.data);
+          if (res.data.member === false) {
+            navigation.navigate("SignUpScreen", res.data);
+          } else {
+            navigation.navigate("Main", res.data);
+          }    
+        })
+        .catch(error => console.warn(error));
       }
+    
+    // 테스트용으로 할때 사용.
     /*
       if (true) {
         //console.log(route.params.url);
@@ -64,13 +69,13 @@ import axios from 'axios';
             auth: "P",
             profile_image: "",
             member_timetable: ["월", "화", "수"],
+            token: 
           }})
-        }
-        
-      }
+        }        
+      }  
     */
-
     }, [route.params]);
+    
 
     const fetchAPI = async () => {
       const res = await axios.get('http://3.37.159.244:8080/kakaoLoginOK')

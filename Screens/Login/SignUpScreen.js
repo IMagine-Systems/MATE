@@ -28,7 +28,9 @@ import {
   NotoSansKR_700Bold,
   NotoSansKR_900Black,
 } from "@expo-google-fonts/noto-sans-kr";
-import axios from "axios";
+
+// API 모듈
+import { memberAxios } from "../../config/axiosAPI";
 
 export default function SignUpScreen({ navigation, route }) {
   // Base64 선언 및 할당
@@ -67,8 +69,12 @@ export default function SignUpScreen({ navigation, route }) {
   const deviceWidth = Dimensions.get("window").width;
   const deviceHeight = Dimensions.get("window").height;
 
-  // FormData
+  // FormData state
+  const [ formDataProfile, setFormDataProfile ] = useState({});
   const formData = new FormData();
+
+  
+  //const formData = new FormData(); 전역변수ㅜㅜ
 
   // 폰트 설정
   let [fontLoaded] = useFonts({
@@ -99,39 +105,43 @@ export default function SignUpScreen({ navigation, route }) {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
-    });
+    });  
 
     if (!result.cancelled) {
       setImage(result.uri);
+      
+      console.log("이미지 uri check : ", result.uri);
+      
+ // key 값 image -> 협의 해서 정해야함. 이강우님, 김재용님 협의 필요. 
 
-      formData.append("image", {
+      setFormDataProfile({
         uri: result.uri,
         type: "image/jpeg",
         name: `test.jpeg`,
-      }); // key 값 image -> 협조 해서 정해야함.
-
-      const variables = {
-        studentNumber: "K12312LK",
-        department: "computer",
-        memberName: "김재용",
-        phoneNumber: "01022223333",
-        auth: "DRIVER",
-        area: "GYUNGOON",
-        memberTimeTable: [
-          {
-            dayCode: "월",
-          },
-          {
-            dayCode: "토",
-          },
-        ],
-      };
-
-      formData.append("userData", { 
-        "string": JSON.stringify(variables),
-        type: 'application/json'
       });
+      
+  
+      // const variables = {
+      //   studentNumber: "K12312LK",
+      //   department: "computer",
+      //   memberName: "김재용",
+      //   phoneNumber: "01022223333",
+      //   auth: "DRIVER",
+      //   area: "GYUNGOON",
+      //   memberTimeTable: [
+      //     {
+      //       dayCode: "월",
+      //     },
+      //     {
+      //       dayCode: "토",
+      //     },
+      //   ],
+      // };
 
+      // formData.append("userData", { 
+      //   "string": JSON.stringify(variables),
+      //   type: 'application/json'
+      // });
       
     //   console.log(
     //     "확인1 : ",
@@ -152,10 +162,10 @@ export default function SignUpScreen({ navigation, route }) {
     //     }
     //   );
 
-    
+    /*
     // 프로필 선택후 서버로 전송. 일단 테스트
     const res = await axios.post(
-        `http://www.godseun.com/member/img`,
+        `http://www.godseun.com/member/new`,
         formData,
         {
             headers: {            
@@ -164,10 +174,9 @@ export default function SignUpScreen({ navigation, route }) {
             },
         }
         );
-        
-    console.log("image 전송 : ", res);
+      */
 
-      setUserData((prev) => ({ ...prev, ["profileImage"]: result.uri }));
+    //setUserData((prev) => ({ ...prev, ["profileImage"]: result.uri }));
     }
   };
 
@@ -562,6 +571,39 @@ export default function SignUpScreen({ navigation, route }) {
 
                         //formData.append('userData', userData)
 
+                        formData.append("image",formDataProfile);
+
+                        formData.append("userData", { 
+                          "string": JSON.stringify(userData),
+                          type: 'application/json'
+                        });
+
+                        // http://www.godseun.com/member/img
+                        // http://www.godseun.com/member/new
+                        // `http://3.37.159.244:8080/member/new`
+
+                        //오류 404, 500
+                        /*
+                        const res = await axios.post(
+                          `http://www.godseun.com/member/new`,
+                          formData,
+                          {
+                              headers: {            
+                                  Authorization: `Bearer ${userData.token}`,
+                                  "content-type": "multipart/form-data",
+                              },
+                          }
+                        );*/
+
+                        memberAxios(formData, userData)
+                        .then((res) => { 
+                          console.log("회원가입 res : ", res);
+                          alert("회원가입 성공 하였습나다.");
+                          navigation.navigate("Main", userData);                        
+                        })
+                        .catch((error) => console.warn(error));                    
+                                                
+                        /*
                         const res = await axios.post(
                           `http://www.godseun.com/member/new`,
                           userData,
@@ -571,12 +613,11 @@ export default function SignUpScreen({ navigation, route }) {
                             },
                           }
                         );
-                        alert("회원가입 성공 하였습나다.");
                         //console.log("서버로 받은 결과 : ", res);
-                        navigation.navigate("Main", userData);
+                        */
                       }
 
-                      //navigation.navigate("Main", userData);
+                      //navigation.navigate("Main", route.params.token);
                     }}
                   >
                     <Text

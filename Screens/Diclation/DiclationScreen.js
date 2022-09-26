@@ -18,6 +18,8 @@ export default function DiclationScreen({ navigation }) {
         }
     };
 
+    const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQxMDk0MDAsImV4cCI6MTY2NDE5NTgwMH0.Go0keCeAKi3fTzsB3RNhHMVBAZupn_MCkuT0FC-vbnXYRjSB0ik88xbUGzWovx-Bgx4x8if9LfwRbMFIb-V0GA";
+
     return (
         <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#F5F5F5' }}>
             <View style={styles.container}>
@@ -102,8 +104,12 @@ export default function DiclationScreen({ navigation }) {
                                         "wirterEmail": "zonins3@gmail.com",
                                         "reportStudentId": "201602005",
                                         "content": etcContent,
+                                    }, {
+                                        headers: {
+                                            Authorization: `Bearer ${token}`,
+                                        }
                                     })
-                                    console.log(res);
+                                    console.log("신고 접수 후 응답 데이터 확인 : ", res);
                                     alert('신고 접수 했습니다.');
                                 }
                                 
