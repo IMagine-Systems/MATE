@@ -1,17 +1,20 @@
 import { AntDesign } from '@expo/vector-icons';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { readInquiryAxios } from '../../config/axiosAPI';
 
-export default function Inquiry({ navigation }) {
+export default function Inquiry({ navigation, route }) {
     const [ inquiryData, setInquiryData ] = useState();
-    const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQxMTkyMTgsImV4cCI6MTY2NDIwNTYxOH0.Bj8EXmegwMJKNFLZOfo5tUQbU19DbTJTAyJMQNf9tkoi0osGn2NN8YwVCxet8liCjwN_--7hvq3nNaR_iKFGOg'                
+    //const token = ' eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQyNzQyNDksImV4cCI6MTY2NDM2MDY0OX0.a42jmctYbGz7_fBCUm5LRKOeL6H81OE8F9CHVsSe0LG9ZdgCNexa0E9nucCYZEdQqhxDlRl5q305uJoj6bzGDg'                
     // state
     // QuestionBord API State
     const [ questionBoardData, setQuestionBoardData ] = useState();
     
+    const userTokenRef = useRef(route.params.token);
+
     useEffect(() => {
-       readInquiryAxios(token)
+       readInquiryAxios(userTokenRef.current)
        .then((res) => {
            console.log("문의 데이터 확인 : ", res.data);
            setQuestionBoardData(res.data);
@@ -22,7 +25,7 @@ export default function Inquiry({ navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.navigate('Main')}>
+                <TouchableOpacity onPress={() => navigation.navigate('Main', route.params)}>
                     <AntDesign name='left' size={25} color='black' />
                 </TouchableOpacity>
             </View>
@@ -39,7 +42,7 @@ export default function Inquiry({ navigation }) {
                         if (questionBoardData) {
                             console.log("1",questionBoardData)
                             return (
-                                <View style={[styles.item_view, styles.item_exist]}>
+                                <ScrollView style={[styles.item_view, styles.item_exist]}>
                                     {
                                         questionBoardData.map(data => (                                            
                                             <View style={styles.item_wrapper}>
@@ -49,7 +52,7 @@ export default function Inquiry({ navigation }) {
                                             </View>                                                                                          
                                         ))
                                     }
-                                </View>
+                                </ScrollView>
                             );
                         } else {
                             return (

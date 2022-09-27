@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Dimensions } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { KeyboardAvoidingView } from 'react-native';
 
 import { AntDesign } from '@expo/vector-icons';
 import axios from 'axios';
+import { setDiclationAxios } from '../../config/axiosAPI';
 
-export default function DiclationScreen({ navigation }) {
+export default function DiclationScreen({ navigation, route }) {
     const [reportable, setReportable] = useState(false);
     const [reason, setReason] = useState();
     const [etcContent, setEtcContent] = useState('');
@@ -18,6 +19,8 @@ export default function DiclationScreen({ navigation }) {
         }
     };
 
+    const userTokenRef = useRef(route.params.token);
+
     const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQxMDk0MDAsImV4cCI6MTY2NDE5NTgwMH0.Go0keCeAKi3fTzsB3RNhHMVBAZupn_MCkuT0FC-vbnXYRjSB0ik88xbUGzWovx-Bgx4x8if9LfwRbMFIb-V0GA";
 
     return (
@@ -26,7 +29,7 @@ export default function DiclationScreen({ navigation }) {
                 <View style={styles.header}>
                     <View style={{ marginTop: 31 }}>
                         <TouchableOpacity
-                            onPress={() => navigation.navigate('BordingList')}
+                            onPress={() => navigation.navigate('BordingList', route.params)}
                             style={{ width: 35, height: 35, justifyContent: 'center' }}>
                             <AntDesign name='left' size={25} color='black' />
                         </TouchableOpacity>
@@ -99,21 +102,18 @@ export default function DiclationScreen({ navigation }) {
                             disabled={!reportable}
                             onPress={async () => {
                                 if (etcContent.length !== 0) {
-                                    const res = await axios.post('http://3.37.159.244:8080/ReportBoard/new', {
-                                        "wirterStudentId": "201702003",
-                                        "wirterEmail": "zonins3@gmail.com",
-                                        "reportStudentId": "201602005",
-                                        "content": etcContent,
-                                    }, {
-                                        headers: {
-                                            Authorization: `Bearer ${token}`,
-                                        }
+                                    setDiclationAxios(userTokenRef.current, "201702003", "zonins3@gmail.com", "201602005", etcContent)
+                                    .then((res) => {
+                                        console.log("신고 작성 후 서버로 전송 res : ", res);
+                                        alert('신고 접수 했습니다.');
+                                        navigation.navigate('Main', route.params);
+
                                     })
-                                    console.log("신고 접수 후 응답 데이터 확인 : ", res);
-                                    alert('신고 접수 했습니다.');
+                                    .catch((error) => console.warn(error));                                                                        
+                                } else {
+                                    alert("작성 안한 부분 있습니다.");
                                 }
                                 
-                                navigation.navigate('Main');
                             }}
                             style={
                                 reportable

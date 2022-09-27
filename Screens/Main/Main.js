@@ -138,7 +138,7 @@ export default function Main({ navigation, route }) {
                     
                     <TouchableOpacity
                         style={{marginLeft: 10}}
-                        onPress={() => navigation.navigate("Setting")}
+                        onPress={() => navigation.navigate("Setting", route.params)}
                     >  
                         <Feather name='settings' size={24} color='#909090' />                    
                     </TouchableOpacity>                                
@@ -156,7 +156,7 @@ export default function Main({ navigation, route }) {
                                 <View>
                                     <View style={{ paddingLeft: 20, paddingRight: 20 }}> 
                                         <TouchableOpacity
-                                            onPress={() => navigation.navigate('LocalSettingFirst', params.current)}
+                                            onPress={() => navigation.navigate('LocalSettingFirst', route.params)}
                                             style={styles.local_setting}>
                                             <View style={styles.local_display}>
                                                 <MaterialCommunityIcons
@@ -214,7 +214,7 @@ export default function Main({ navigation, route }) {
                                     <View style={{ paddingLeft: 20, paddingRight: 20 }}>
                                        
                                         <TouchableOpacity
-                                            onPress={() => navigation.navigate('LocalSettingFirst', params.current)}
+                                            onPress={() => navigation.navigate('LocalSettingFirst', route.params)}
                                             style={styles.local_setting}>
                                             <View style={styles.local_display}>
                                                 <MaterialCommunityIcons

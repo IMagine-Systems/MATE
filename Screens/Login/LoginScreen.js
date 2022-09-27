@@ -28,7 +28,7 @@ import axios from 'axios';
       //fetchAPI();
       
       if (route.params && route.params.url) {
-        //console.log(route.params.url);
+        console.log("백엔로 부터 받은 url : ", route.params.url);
         //console.log("kakao state data route : ", route.params);
         axios.get(route.params.url.replace("LoginTo", "Login"))
         .then((res) => {
@@ -50,7 +50,7 @@ import axios from 'axios';
         //const res = await axios.get(route.params.url.replace("LoginTo", "Login"));
         //console.log("응답 : ", res.data);
         // 회원인지 확인 하는 조건문
-        if (false) {
+        if (true) {
           navigation.navigate("SignUpScreen", {data : {
             email : "zonins3@gmail.com",
             member_name : "",
@@ -59,6 +59,7 @@ import axios from 'axios';
             auth: "P",
             profile_image: "",
             member_timetable: [],
+            
           }});
         } else {
           navigation.navigate("Main", {data : {
@@ -68,8 +69,7 @@ import axios from 'axios';
             student_number: "201702003",
             auth: "P",
             profile_image: "",
-            member_timetable: ["월", "화", "수"],
-            token: 
+            member_timetable: ["월", "화", "수"],            
           }})
         }        
       }  

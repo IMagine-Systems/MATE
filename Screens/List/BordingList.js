@@ -208,7 +208,7 @@ export default function BordingList({navigation, route}) {
                                     <Text style={styles.carpool_list_ticket_display_title_text}>김수지</Text>
                                 </View>                                
                                 <TouchableOpacity 
-                                    onPress={() => navigation.navigate("DiclationScreen")}
+                                    onPress={() => navigation.navigate("DiclationScreen", route.params)}
                                     style={styles.carpool_list_ticket_display_title_pesinger}
                                 >
                                     <Feather name="bell" size={24} color="#d8d7d7" />

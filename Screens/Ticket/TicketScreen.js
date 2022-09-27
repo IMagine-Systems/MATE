@@ -63,7 +63,7 @@ export default function TicketScreen({navigation, route}) {
         getMemberAxios(userTokenRef)
         .then(res => {
             console.log("ticke screen member get : ", res.data);
-            setLocalData([res.data.area.name, "경운대학교"]);
+            setLocalData([res.data.area === "INDONG" ? "인동" : "경운대학교", "경운대학교"]);
         })
         .catch((error) => console.warn(error));
     }, []);

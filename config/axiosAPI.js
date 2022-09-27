@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const KIM_BASE_URL = `http://www.godseun.com`; //
-const JANG_BASE_URL = `http://3.37.159.244:8080`;
+const KIM_BASE_URL = `http://www.godseun.com`; // 김재용 백엔드 url
+const JANG_BASE_URL = `http://3.37.159.244:8080`; // 장건영 백엔드 url
 
 // 로그인 후 백엔드로 보낸 응답 데이터
 /*
@@ -254,5 +254,19 @@ export function readInquiryAxios(token) {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+  });
+}
+
+// 신고 하기 
+export function setDiclationAxios(token, writerStudentId, writerEmail, reportStudentId, content) {
+  return axios.post(`${JANG_BASE_URL}/ReportBoard/new`, {
+    writerStudentId: writerStudentId,
+    writerEmail: writerEmail,
+    reportStudentId: reportStudentId,
+    content: content,
+  }, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
   });
 }

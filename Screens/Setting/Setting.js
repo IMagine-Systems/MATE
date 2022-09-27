@@ -2,11 +2,11 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 
-export default function Setting({ navigation }) {
+export default function Setting({ navigation, route }) {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.navigate('Main')}>
+                <TouchableOpacity onPress={() => navigation.navigate('Main', route.params)}>
                     <AntDesign name='left' size={25} color='black' />
                 </TouchableOpacity>
             </View>
@@ -14,10 +14,10 @@ export default function Setting({ navigation }) {
             <View>
                 <Text style={styles.large_category}>문의</Text>
             </View>
-            <TouchableOpacity onPress={() => navigation.navigate("InquiryScreen")}>
+            <TouchableOpacity onPress={() => navigation.navigate("InquiryScreen", route.params)}>
                 <Text style={styles.category}>1:1 문의</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("Inquiry")}>
+            <TouchableOpacity onPress={() => navigation.navigate("Inquiry", route.params)}>
                 <Text style={styles.category}>문의내역</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => alert('로그아웃')}>

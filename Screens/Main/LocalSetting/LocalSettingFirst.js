@@ -1,5 +1,5 @@
 // 모듈 불러오는 부분, 현재 수정중
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 // 아이콘(원격주소) 불러오기
 import { AntDesign } from '@expo/vector-icons';
@@ -14,11 +14,13 @@ export default function LocalSettingFirst({ navigation, route }) {
     const [selected, setSelected] = useState('');
     const localData = ['인동', '옥계', '대구'];
 
+    const userTokenRef = useRef(route.params.token);
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => {                                        
-                        navigation.navigate('Main');
+                        navigation.navigate('Main', route.params);
                     }
                 }>
                     <AntDesign name='left' size={25} color='black' />
@@ -44,21 +46,23 @@ export default function LocalSettingFirst({ navigation, route }) {
             </View>
             <View style={styles.footer}>
                 <TouchableOpacity
-                    onPress={() => { 
+                    onPress={async () => { 
                         console.log(route.params.area);
                                                 
                         if (selected === '') {
                             alert("지역 설정 안했습니다.")    
                         } else {
-                            navigation.goBack('Main', route.params)
+                            await axios.put('http://3.37.159.244:8080/area', {
+                                area: selected === "옥계" ? "OGGYE" : "INDONG",
+                                },{
+                                    headers: {
+                                        Authorization: `Bearer ${userTokenRef.current}`,
+                                    }
+                                },
+                            );
+                            navigation.navigate('Main', route.params)
                         }                        
                         
-                        // await axios.put('http://3.37.159.244:8080/area', {
-                        //     area: selected,
-                        //     },{
-                        //         headers: '사용자JWT 토큰 ex)ancnjjfkslw.skdkdkfskffk.skdkdkdskdsk'
-                        //     },
-                        //);
                         
                     }}
                     style={styles.next_btn}>

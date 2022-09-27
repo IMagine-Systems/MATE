@@ -38,7 +38,7 @@ import RenderHtml from "react-native-render-html";
 import { Archivo_500Medium } from "@expo-google-fonts/archivo";
 import { setInquiryAxios } from "../../config/axiosAPI";
 
-export default function InquiryScreen({ navigation }) {
+export default function InquiryScreen({ navigation, route }) {
   // state
   // TextInput 글자 카운트 출력
   const [title, setTitle] = useState("");
@@ -54,7 +54,9 @@ export default function InquiryScreen({ navigation }) {
   const { width } = useWindowDimensions();
   console.log("window : ", width);
 
-  const token ="eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQxMDk0MDAsImV4cCI6MTY2NDE5NTgwMH0.Go0keCeAKi3fTzsB3RNhHMVBAZupn_MCkuT0FC-vbnXYRjSB0ik88xbUGzWovx-Bgx4x8if9LfwRbMFIb-V0GA";
+  // const token ="eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQxMDk0MDAsImV4cCI6MTY2NDE5NTgwMH0.Go0keCeAKi3fTzsB3RNhHMVBAZupn_MCkuT0FC-vbnXYRjSB0ik88xbUGzWovx-Bgx4x8if9LfwRbMFIb-V0GA";
+
+  const userTokenRef = useRef(route.params.token);
 
   // 폰트 설정
   let [fontLoaded] = useFonts({
@@ -83,7 +85,7 @@ export default function InquiryScreen({ navigation }) {
         <View style={styles.header}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity
-              onPress={() => navigation.navigate("Setting")}
+              onPress={() => navigation.navigate("Setting", route.params)}
               style={{ width: 35, height: 35, justifyContent: "center" }}
             >
               <AntDesign name="left" size={25} color="black" />
@@ -240,11 +242,17 @@ export default function InquiryScreen({ navigation }) {
                     etcContent.length > 0 &&
                     email.length > 0
                   ) {
-                    setInquiryAxios(token, email, title, etcContent)
+                    setInquiryAxios(userTokenRef.current, email, title, etcContent)
                       .then((res) => {
                         console.log("문의 제출 응답 데이터 확인 : ", res.data);
+                        alert("문의 작성 했습니다.");
+                        navigation.navigate("Main", route.params);
                       })
-                      .catch((error) => console.warn(error));
+                      .catch((error) => { 
+                        console.warn(error);                        
+                      });
+                  } else {
+                    alert("작성 안한 부분 있습니다.");        
                   }
                 }}
                 style={styles.button_container_next_button}
