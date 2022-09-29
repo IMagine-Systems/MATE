@@ -18,7 +18,7 @@ import Svg, { Path, G, Mask, Rect } from "react-native-svg";
 // 클립보드
 import * as Clipboard from 'expo-clipboard';
 import axios from "axios";
-import { deleteTicketAxios, getBordingListAxios } from "../../config/axiosAPI";
+import { deleteTicketAxios, getBordingListAxios, updateTicketAxios } from "../../config/axiosAPI";
 
 export default function BordingList({navigation, route}) {
 
@@ -74,7 +74,7 @@ export default function BordingList({navigation, route}) {
                 onPress: () => {
                     
                     console.log("ticket id : ", ticketList);
-                    deleteTicketAxios(userTokenRef.current, 3)
+                    updateTicketAxios(userTokenRef.current, 8)
                     .then(res => {
                         console.log("ticket delecte res : ", res);
                         navigation.navigate('Main', route.params);                        

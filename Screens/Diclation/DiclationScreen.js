@@ -9,7 +9,7 @@ import { setDiclationAxios } from '../../config/axiosAPI';
 export default function DiclationScreen({ navigation, route }) {
     const [reportable, setReportable] = useState(false);
     const [reason, setReason] = useState();
-    const [etcContent, setEtcContent] = useState('');
+    const [etcContent, setEtcContent] = useState('');    
 
     const selectReason = (select) => {
         setReportable(true);
@@ -43,6 +43,7 @@ export default function DiclationScreen({ navigation, route }) {
                         style={reason === 0 ? styles.reason_selected_text : styles.reason_text}
                         onPress={() => {
                             selectReason(0);
+                            setEtcContent("카풀 돈을 받지 못했어요");
                         }}>
                         카풀 돈을 받지 못했어요
                     </Text>
@@ -50,6 +51,7 @@ export default function DiclationScreen({ navigation, route }) {
                         style={reason === 1 ? styles.reason_selected_text : styles.reason_text}
                         onPress={() => {
                             selectReason(1);
+                            setEtcContent("성희롱을 해요");
                         }}>
                         성희롱을 해요
                     </Text>
@@ -57,13 +59,15 @@ export default function DiclationScreen({ navigation, route }) {
                         style={reason === 2 ? styles.reason_selected_text : styles.reason_text}
                         onPress={() => {
                             selectReason(2);
+                            setEtcContent("욕설, 비속어를 사용해요")
                         }}>
                         욕설, 비속어를 사용해요
                     </Text>
                     <Text
                         style={reason === 3 ? styles.reason_selected_text : styles.reason_text}
                         onPress={() => {
-                            selectReason(3);
+                            selectReason(3);     
+                            setEtcContent("");                       
                         }}>
                         기타 (하단에 내용 작성)
                     </Text>
@@ -77,7 +81,7 @@ export default function DiclationScreen({ navigation, route }) {
                                 multiline={true}
                                 textAlignVertical='top'
                                 value={etcContent}
-                                onChange={(e) => {
+                                onChange={(e) => {                                    
                                     setEtcContent(e.nativeEvent.text);
                                 }}
                                 placeholder='불편했던 점들을 자세히 작성해주세요.'
@@ -104,7 +108,8 @@ export default function DiclationScreen({ navigation, route }) {
                                 if (etcContent.length !== 0) {
                                     setDiclationAxios(userTokenRef.current, "201702003", "zonins3@gmail.com", "201602005", etcContent)
                                     .then((res) => {
-                                        console.log("신고 작성 후 서버로 전송 res : ", res);
+                                        console.log("신고 작성 후 서버로 보내기 전 : ", etcContent);
+                                        console.log("신고 작성 후 서버로 전송 res : ", res.data);
                                         alert('신고 접수 했습니다.');
                                         navigation.navigate('Main', route.params);
 

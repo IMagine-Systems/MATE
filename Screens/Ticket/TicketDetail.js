@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { readTicketAxios } from "../../config/axiosAPI";
+import { readTicketAxios, setRidingAxios } from "../../config/axiosAPI";
 
 export default function TicketDetail({ navigation, route }) {
   const [detail, setDetail] = useState();
   const [loading, setLoading] = useState(true);
 
-  console.log("티켓 상세 정보 중에 사용자 토큰 확인 : ", route.params.userData);
+  console.log("티켓 상세 정보 중에 사용자 토큰 확인 : ", route.params);
   useEffect(() => {
     readTicketAxios(route.params.userData.token, route.params.id)
       .then((res) => {
@@ -21,7 +21,7 @@ export default function TicketDetail({ navigation, route }) {
   return (
     <View style={styles.container}>
       {loading === false ? (
-        <>
+        <View>
           <View style={styles.header}>
             <TouchableOpacity
               onPress={() => navigation.navigate("Main", route.params.userData)}
@@ -31,13 +31,13 @@ export default function TicketDetail({ navigation, route }) {
           </View>
           <View style={styles.address}>
             <View style={{ width: "56%", alignItems: "flex-end" }}>
-              <Text style={styles.address_text}>{detail.startArea.name}</Text>
+              <Text style={styles.address_text}>{detail.startArea}</Text>
             </View>
             <View style={{ width: "30%", alignItems: "center" }}>
               <AntDesign name="arrowright" size={24} color="black" />
             </View>
             <View style={{ alignItems: "flex-start", width: "56%" }}>
-              <Text style={styles.address_text}>{detail.endArea.name}</Text>
+              <Text style={styles.address_text}>{detail.endArea}</Text>
             </View>
           </View>
           <View style={styles.form}>
@@ -65,7 +65,11 @@ export default function TicketDetail({ navigation, route }) {
               </View>
             </View>
           </View>
-          <TouchableOpacity style={styles.footer}>
+          <TouchableOpacity 
+            
+            onPress={() => setRidingAxios("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQzNzAzOTksImV4cCI6MTY2NDQ1Njc5OX0.UFhS1n1bbcnTkLPPCjeOSyl7njSGz5LtCPswDoymou8o1QV1bTt7GkSLdzEubl7yZFbyN-5tOW9CR-DYu8kdcQ").then(res => console.log("탑승하기 클릭시 서버로 전송 : ", res))}
+            style={styles.footer}
+          >
             <View style={styles.button_container_next_button}>
               <Text
                 style={{ color: "#FFFFFF", fontWeight: "bold", fontSize: 18 }}
@@ -74,7 +78,7 @@ export default function TicketDetail({ navigation, route }) {
               </Text>
             </View>
           </TouchableOpacity>
-        </>
+        </View>
       ) : null}
     </View>
   );

@@ -2,10 +2,12 @@
 import { useEffect, useState, useRef } from "react";
 import { View } from 'react-native'
 import { WebView } from 'react-native-webview';
+import { BASE_URL }from '../../config/axiosAPI';
 
 export default function KakaoWebView({navigation}) {
 
-  const [ kakaoLoginData, setKakaoLoginData ] = useState({})
+  const [ kakaoLoginData, setKakaoLoginData ] = useState({});
+
   //const [ stateChange, setStateChange ] = useState("");
   //const stateChange = useRef("");
   
@@ -14,7 +16,6 @@ export default function KakaoWebView({navigation}) {
   //   console.slog("kakao Webview res : ", res.data);
   // }, [])
   
-
   // https://kauth.kakao.com/oauth/authorize?client_id=235fc02960c0239e43b70d9e3fd2c9e6&redirect_uri=http://3.37.159.244:8080/kakaoLogin&response_type=code
   // http://kauth.kakao.com/oauth/authorize?client_id=8763097c83420044eeea901b962072ab&redirect_uri=http://3.37.159.244:8080/kakaoLogin&client_secret=QQP9e4kuegEA1ZQLUSDFINBknLcDoL8R&response_type=code
 
@@ -38,7 +39,7 @@ export default function KakaoWebView({navigation}) {
         originWhitelist={['*']}
         scalesPageToFit={false}
         javaScriptEnabled={true} // 235fc02960c0239e43b70d9e3fd2c9e6(파트장님)  8763097c83420044eeea901b962072ab(재용 개발자)
-        source={{uri : 'https://kauth.kakao.com/oauth/authorize?client_id=8763097c83420044eeea901b962072ab&redirect_uri=http://www.godseun.com/kakaoLoginTo&response_type=code'}}        
+        source={{uri : `https://kauth.kakao.com/oauth/authorize?client_id=235fc02960c0239e43b70d9e3fd2c9e6&redirect_uri=${BASE_URL}/kakaoLoginTo&response_type=code`}}        
         onHttpError={(e) => console.log("onHttpError : ", e)}
       />              
     </View>

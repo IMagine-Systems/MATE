@@ -17,9 +17,10 @@ export default function Inquiry({ navigation, route }) {
        readInquiryAxios(userTokenRef.current)
        .then((res) => {
            console.log("문의 데이터 확인 : ", res.data);
+           
            setQuestionBoardData(res.data);
        })
-       .catch((error) => console.warn(error));
+       .catch((error) => console.log(typeof error));
     }, []);
 
     return (

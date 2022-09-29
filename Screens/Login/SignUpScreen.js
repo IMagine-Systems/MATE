@@ -570,7 +570,7 @@ export default function SignUpScreen({ navigation, route }) {
                         });
 
                         //formData.append('userData', userData)
-
+                        console.log("서버 전송전 이미지 url 확인 : ", formDataProfile);
                         formData.append("image",formDataProfile);
 
                         formData.append("userData", { 

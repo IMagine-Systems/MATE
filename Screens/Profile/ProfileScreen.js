@@ -1,7 +1,7 @@
 // 모듈 불러오는 부분, 현재 수정중
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { useIsFocused } from '@react-navigation/native';
 // 아이콘
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
@@ -25,7 +25,13 @@ import {
 
 // axios
 import axios from "axios";
-import { getProfileAxios } from "../../config/axiosAPI";
+import {
+  getMemberAxios,
+  getProfileAxios,
+  getProfileImgAxios,
+} from "../../config/axiosAPI";
+
+import { BASE_URL } from "../../config/axiosAPI";
 
 export default function ProfileScreen({ navigation, route }) {
   // State
@@ -34,10 +40,16 @@ export default function ProfileScreen({ navigation, route }) {
   const [goingSchoolDays, setGoingSchoolDays] = useState(["월", "화", "수"]);
   const days = ["월", "화", "수", "목", "금"];
 
-  const token =
-    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQxMjc0MzUsImV4cCI6MTY2NDIxMzgzNX0.mxtMKy-xVFF-DS--JxTcQpW1ZF9clDkQcxJbWR6Uvc_lQoIuXy2q8fTjpzH9fq6ROiW_AbRvQrdJH6sLZu0laA";
+  // const token =
+  //   "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQxMjc0MzUsImV4cCI6MTY2NDIxMzgzNX0.mxtMKy-xVFF-DS--JxTcQpW1ZF9clDkQcxJbWR6Uvc_lQoIuXy2q8fTjpzH9fq6ROiW_AbRvQrdJH6sLZu0laA";
 
   const userTokenRef = useRef(route.params.token);
+
+  const [loaidng, setLoading] = useState(true);
+
+  const [member, setMember] = useState();
+
+  const isFocused = useIsFocused();
 
   useEffect(async () => {
     console.log("프로필 사용자 토큰 확인 : ", userTokenRef.current);
@@ -48,9 +60,24 @@ export default function ProfileScreen({ navigation, route }) {
     // });
 
     getProfileAxios(userTokenRef.current)
-      .then((res) => console.log("마이페이지 불러오기 res : ", res.data))
-      .catch((error) => console.warn(error));
-  }, []);
+    .then(res => {
+      setMember(res.data);
+      console.log("profile member read : ", res.data);
+      setLoading(false);
+    })
+
+
+    /*
+    getProfileImgAxios("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2NCIsImlzcyI6ImNhcnBvb2wgYXBwIiwiaWF0IjoxNjY0MjkzMjEyLCJleHAiOjE2NjQzNzk2MTJ9.OEaGA5x6BW9-AJyr3Pjjg0m6_Qdmo-VL-zpGHkRRIpq_PHszx8Oo8n--BW6NDdXdZRVl-yU-6ABU7rDhlRR_Ew", "/64/bb1469ad3d21a04760cf719a86f2e7be.jpeg")
+    .then( res => console.log("profile img read : ", res))
+    .catch( error => console.warn(error));
+  */
+    /*
+    getProfileImgAxios(userTokenRef.current, "/64/bb1469ad3d21a04760cf719a86f2e7be.jpeg")
+    .then( res => console.log("profile img read : ", res))
+    .catch( error => console.warn(error));
+   */
+  }, [isFocused]);
 
   // 폰트 설정
   let [fontLoaded] = useFonts({
@@ -81,172 +108,204 @@ export default function ProfileScreen({ navigation, route }) {
           <Text style={styles.logo_text}>MATE</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.main}>
-        <View style={{ marginBottom: 20 }}>
-          <View
-            style={{
-              paddingLeft: 39,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <View style={{ flexDirection: "row" }}>
-              <Ionicons name="person-circle-sharp" size={60} color="#d9d9d9" />
-              <View style={{ width: 200, justifyContent: "center" }}>
-                <Text style={{ fontSize: 16 }}>항공소프트웨어공학과</Text>
-                <Text style={{ marginBottom: 5, marginTop: 5, fontSize: 18 }}>
-                  손민석
-                </Text>
-              </View>
-            </View>
-            <View style={{ alignItems: "flex-end", marginRight: 20 }}>
-              <AntDesign name="right" size={24} color="#909090" />
-            </View>
-          </View>
-          <View style={{ alignItems: "center", marginTop: 8 }}>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("ProfileUpdateScreen", route.params)
-              }
+      {loaidng === false ? (
+        <View style={styles.main}>
+          <View style={{ marginBottom: 20 }}>
+            <View
+              style={{
+                paddingLeft: 39,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
             >
-              <View
-                style={{
-                  width: 270,
-                  height: 30,
-                  justifyContent: "center",
-                  backgroundColor: "#0173fe",
-                  alignItems: "center",
-                  borderRadius: 15,
-                }}
-              >
-                <Text style={{ color: "#FFFFFF", fontWeight: "bold" }}>
-                  프로필 수정하기
-                </Text>
+              <View style={{ flexDirection: "row" }}>
+                {member.profileImage !== null || "" ? (
+                  <Image
+                    style={{ width: 50, height: 50, borderRadius: 30, marginRight: 10 }}
+                    source={{
+                      uri: `${BASE_URL}/member/profile${member.profileImage}`,
+                    }}
+                  />
+                ) : (
+                  <Ionicons
+                    name="person-circle-sharp"
+                    size={60}
+                    color="#d9d9d9"
+                  />
+                )}
+
+                <View style={{ width: 200, justifyContent: "center" }}>
+                  <Text style={{ fontSize: 16 }}>{member.department}</Text>
+                  <Text style={{ marginBottom: 5, marginTop: 5, fontSize: 18 }}>
+                    {member.memberName}
+                  </Text>
+                </View>
               </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={{ paddingLeft: 20, paddingRight: 20 }}>
-          <View style={{ marginLeft: 30, marginBottom: 10 }}>
-            <Text>요일</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-            }}
-          >
-            {days.map((day) => {
-              const isSelected = goingSchoolDays.includes(day);
-              console.log(isSelected);
-              return (
+              <View style={{ alignItems: "flex-end", marginRight: 20 }}>
+                <AntDesign name="right" size={24} color="#909090" />
+              </View>
+            </View>
+            <View style={{ alignItems: "center", marginTop: 8 }}>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("ProfileUpdateScreen", route.params)
+                }
+              >
                 <View
                   style={{
-                    backgroundColor: isSelected ? "#007AFF" : "#FFFFFF",
-                    width: 35,
-                    height: 35,
+                    width: 270,
+                    height: 30,
                     justifyContent: "center",
+                    backgroundColor: "#0173fe",
                     alignItems: "center",
-                    borderColor: isSelected ? "" : "#D9D9D9",
-                    borderRadius: 50,
-                    borderWidth: isSelected ? 0 : 1,
+                    borderRadius: 15,
                   }}
                 >
-                  <Text style={{ color: isSelected ? "#FFFFFF" : "#D9D9D9" }}>
-                    {day}
+                  <Text style={{ color: "#FFFFFF", fontWeight: "bold" }}>
+                    프로필 수정하기
                   </Text>
                 </View>
-              );
-            })}
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={{ paddingLeft: 20, paddingRight: 20 }}>
+            <View style={{ marginLeft: 30, marginBottom: 10 }}>
+              <Text>요일</Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+                alignItems: "center",
+              }}
+            >
+              {days.map((day) => {
+                const isSelected = member.memberTimeTable.filter((item) => {
+                  return item.dayCode === day;
+                }).length;
+                console.log(isSelected);
+                return (
+                  <View
+                    style={{
+                      backgroundColor: isSelected ? "#007AFF" : "#FFFFFF",
+                      width: 35,
+                      height: 35,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderColor: isSelected ? "" : "#D9D9D9",
+                      borderRadius: 50,
+                      borderWidth: isSelected ? 0 : 1,
+                    }}
+                  >
+                    <Text style={{ color: isSelected ? "#FFFFFF" : "#D9D9D9" }}>
+                      {day}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+          <View style={styles.carpool_list}>
+            <View style={styles.carpool_list_title}>
+              <Text
+                style={{ fontWeight: "bold", fontSize: 17, marginLeft: 30 }}
+              >
+                최근 탑승 목록
+              </Text>
+            </View>
+            <View style={{ paddingLeft: 30, paddingRight: 30 }}>
+              <View style={styles.carpool_list_ticket_display}>
+                <Ionicons
+                  name="person-circle-sharp"
+                  size={35}
+                  color="#d9d9d9"
+                />
+                <View>
+                  <View style={styles.carpool_list_ticket_display_title}>
+                    <Text style={styles.carpool_list_ticket_display_title_text}>
+                      인동 출발 / 무료
+                    </Text>
+                  </View>
+                  <View style={{ marginLeft: 20 }}>
+                    <Text>8월 24일, 오전 10시 30분</Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    width: 40,
+                    height: 25,
+                    borderRadius: 10,
+                    backgroundColor: "#D9D9D9",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ color: "#FFFFFF" }}>4/4</Text>
+                </View>
+              </View>
+              <View style={styles.carpool_list_ticket_display}>
+                <Ionicons
+                  name="person-circle-sharp"
+                  size={35}
+                  color="#d9d9d9"
+                />
+                <View>
+                  <View style={styles.carpool_list_ticket_display_title}>
+                    <Text style={styles.carpool_list_ticket_display_title_text}>
+                      인동 출발 / 유료
+                    </Text>
+                  </View>
+                  <View style={{ marginLeft: 20 }}>
+                    <Text>8월 21일, 오전 11시</Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    width: 40,
+                    height: 25,
+                    borderRadius: 10,
+                    backgroundColor: "#D9D9D9",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ color: "#FFFFFF" }}>1/4</Text>
+                </View>
+              </View>
+              <View style={styles.carpool_list_ticket_display}>
+                <Ionicons
+                  name="person-circle-sharp"
+                  size={35}
+                  color="#d9d9d9"
+                />
+                <View>
+                  <View style={styles.carpool_list_ticket_display_title}>
+                    <Text style={styles.carpool_list_ticket_display_title_text}>
+                      인동 출발 / 무료
+                    </Text>
+                  </View>
+                  <View style={{ marginLeft: 20 }}>
+                    <Text>8월 8일, 오전 8시 30분</Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    width: 40,
+                    height: 25,
+                    borderRadius: 10,
+                    backgroundColor: "#D9D9D9",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ color: "#FFFFFF" }}>3/4</Text>
+                </View>
+              </View>
+            </View>
           </View>
         </View>
-        <View style={styles.carpool_list}>
-          <View style={styles.carpool_list_title}>
-            <Text style={{ fontWeight: "bold", fontSize: 17, marginLeft: 30 }}>
-              최근 탑승 목록
-            </Text>
-          </View>
-          <View style={{ paddingLeft: 30, paddingRight: 30 }}>
-            <View style={styles.carpool_list_ticket_display}>
-              <Ionicons name="person-circle-sharp" size={35} color="#d9d9d9" />
-              <View>
-                <View style={styles.carpool_list_ticket_display_title}>
-                  <Text style={styles.carpool_list_ticket_display_title_text}>
-                    인동 출발 / 무료
-                  </Text>
-                </View>
-                <View style={{ marginLeft: 20 }}>
-                  <Text>8월 24일, 오전 10시 30분</Text>
-                </View>
-              </View>
-              <View
-                style={{
-                  width: 40,
-                  height: 25,
-                  borderRadius: 10,
-                  backgroundColor: "#D9D9D9",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ color: "#FFFFFF" }}>4/4</Text>
-              </View>
-            </View>
-            <View style={styles.carpool_list_ticket_display}>
-              <Ionicons name="person-circle-sharp" size={35} color="#d9d9d9" />
-              <View>
-                <View style={styles.carpool_list_ticket_display_title}>
-                  <Text style={styles.carpool_list_ticket_display_title_text}>
-                    인동 출발 / 유료
-                  </Text>
-                </View>
-                <View style={{ marginLeft: 20 }}>
-                  <Text>8월 21일, 오전 11시</Text>
-                </View>
-              </View>
-              <View
-                style={{
-                  width: 40,
-                  height: 25,
-                  borderRadius: 10,
-                  backgroundColor: "#D9D9D9",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ color: "#FFFFFF" }}>1/4</Text>
-              </View>
-            </View>
-            <View style={styles.carpool_list_ticket_display}>
-              <Ionicons name="person-circle-sharp" size={35} color="#d9d9d9" />
-              <View>
-                <View style={styles.carpool_list_ticket_display_title}>
-                  <Text style={styles.carpool_list_ticket_display_title_text}>
-                    인동 출발 / 무료
-                  </Text>
-                </View>
-                <View style={{ marginLeft: 20 }}>
-                  <Text>8월 8일, 오전 8시 30분</Text>
-                </View>
-              </View>
-              <View
-                style={{
-                  width: 40,
-                  height: 25,
-                  borderRadius: 10,
-                  backgroundColor: "#D9D9D9",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ color: "#FFFFFF" }}>3/4</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-      </View>
+      ) : null}
     </View>
   );
 }

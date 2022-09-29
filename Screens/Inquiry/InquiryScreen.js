@@ -246,7 +246,7 @@ export default function InquiryScreen({ navigation, route }) {
                       .then((res) => {
                         console.log("문의 제출 응답 데이터 확인 : ", res.data);
                         alert("문의 작성 했습니다.");
-                        navigation.navigate("Main", route.params);
+                        navigation.navigate("Setting", route.params);
                       })
                       .catch((error) => { 
                         console.warn(error);                        

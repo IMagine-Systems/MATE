@@ -48,6 +48,7 @@ export default function TicketScreen({navigation, route}) {
     // 날짜, 시간 문자열로 변환해서 state 관리하고자 한다.
     const [ strDate, setStrDate ] = useState('');
     const [ strTime, setStrTime ] = useState('');
+    const [ toServerDate, setToServerDate ] = useState('');
 
     // 오픈채팅 state
     const [ openChatText, setOpenChatText ] = useState('');
@@ -77,9 +78,10 @@ export default function TicketScreen({navigation, route}) {
     };
 
     const handleConfirm = (date) => {
-        const str = `${date.getMonth()+1}월 ${date.getDate()}일`;
+        const str = `${date.getFullYear()}년 ${date.getMonth()+1}월 ${date.getDate()}일`;
         setStrDate(str);
         console.log("날짜 : ", str);
+        setToServerDate(`${date.getFullYear()}${date.getMonth()+1}${date.getDate()}`);
         hideDatePicker();
     };
 
@@ -96,6 +98,7 @@ export default function TicketScreen({navigation, route}) {
         const str = `${time.getHours()}시 ${time.getMinutes()}분`
         console.log('시간 : ', str);
         setStrTime(str);
+        setToServerDate((prev) =>`${prev}${time.getHours()}${time.getMinutes()}`);
         //console.log(strTime);
         hideTimePicker();
         //setConformDate(date);
@@ -395,7 +398,15 @@ export default function TicketScreen({navigation, route}) {
                                                     <SelectList 
                                                         setSelected={setSelectRecruitCount}
                                                         data={recruitCount}   
-                                                        onSelect={() => console.log(selectRecruitCount)}                                                     
+                                                        onSelect={() => {
+                                                            if (selectRecruitCount === "1 인") {
+                                                                setSelectRecruitCount("1");
+                                                            } else if (selectRecruitCount === "2 인") {
+                                                                setSelectRecruitCount("2");
+                                                            } else if (selectRecruitCount === "3 인") {
+                                                                setSelectRecruitCount("3");
+                                                            }
+                                                        }}                                                     
                                                         placeholder="인원 수"
                                                         search={false}
                                                         
@@ -420,7 +431,9 @@ export default function TicketScreen({navigation, route}) {
                                     if (next.length !== 3) {
                                         return (
                                             <TouchableOpacity 
-                                                onPress={onStepBarBtn}
+                                                onPress={() => {
+                                                    onStepBarBtn();                                                    
+                                                }}
                                                 style={styles.button_container_next_button}
                                             >
                                                 <Text style={{color: '#FFFFFF', fontSize: deviceHeight >= 700 ? 18 : 16, fontFamily: 'NotoSansKR_700Bold'}}>다음으로</Text>
@@ -431,7 +444,10 @@ export default function TicketScreen({navigation, route}) {
                                             <TouchableOpacity 
                                                 onPress={async () => {
                                                     if (openChatText !== "" && selectRecruitCount !== "") {
-                                                        createTicketAxios(userTokenRef, "1", "BEFORE", "GYUNGOON", "INDONG", "202209262335", "test url", "2")
+                                                        
+                                                        //console.log(userTokenRef, startPoint, endPoint, toServerDate, openChatText, selectRecruitCount[0]);
+                                                        
+                                                        createTicketAxios(userTokenRef, "1", "BEFORE", startPoint, endPoint, toServerDate, openChatText, selectRecruitCount[0])
                                                         .then(res => {
                                                             console.log("티켓 생성 res : ", res);
                                                             navigation.navigate("BordingList", route.params);
@@ -441,7 +457,7 @@ export default function TicketScreen({navigation, route}) {
                                                     } else {
                                                         alert("입력 안한 항목이 있습니다.")
                                                     }
-                                                }}
+                                                }}                                            
                                                 style={styles.button_container_next_button}
                                             >
                                                 <Text style={{color: '#FFFFFF', fontSize: deviceHeight >= 700 ? 18 : 16, fontFamily: 'NotoSansKR_700Bold'}}>개설하기</Text>

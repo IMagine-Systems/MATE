@@ -14,6 +14,7 @@ import { useFonts, NotoSansKR_400Regular, NotoSansKR_500Mediu, NotoSansKR_100Thi
 
 //SVG
 import Svg, { Path, G, Mask, Rect } from "react-native-svg";
+import { getOutAxios } from "../../config/axiosAPI";
 export default function PesingerBordingList({navigation, route}) {
 
     // 탑승 종료 state
@@ -22,6 +23,9 @@ export default function PesingerBordingList({navigation, route}) {
     // 탑승 종료 이벤트 
     const onFinish = () => {
         setFinish(!finish);
+        getOutAxios("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2NCIsImlzcyI6ImNhcnBvb2wgYXBwIiwiaWF0IjoxNjY0Mjk2NjYxLCJleHAiOjE2NjQzODMwNjF9.u9t5yl5593qEzgiYAeBBlhCTXdWFW0n7D3h2odquAwuLQNfvMjpjO2JQiAWbSrJrZRXF4p0x-ng8_xBgqtNoNA")
+        .then(res => console.log("내리기 클릭시 서버로 전송 : ", res))
+        .catch(error => console.log("error data : ", error.response.data));
     }
 
     const deviceWidth = Dimensions.get("window").width;
