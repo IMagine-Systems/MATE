@@ -45,7 +45,7 @@ export default function ProfileScreen({ navigation, route }) {
 
   const userTokenRef = useRef(route.params.token);
 
-  const [loaidng, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const [member, setMember] = useState();
 
@@ -106,7 +106,7 @@ export default function ProfileScreen({ navigation, route }) {
           <Text style={styles.logo_text}>MATE</Text>
         </TouchableOpacity>
       </View>
-      {loaidng === false ? (
+      {loading === false ? (
         <View style={styles.main}>
           <View style={{ marginBottom: 20 }}>
             <View
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#3B67FF",
   },
 
-  carpool_list_ticket_display_title_pesinger: {
+  carpool_list_ticket_display_title_passenger: {
     width: 37,
     height: 21,
     backgroundColor: "#A8BBFF",

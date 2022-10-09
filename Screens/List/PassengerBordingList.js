@@ -11,11 +11,13 @@ import {
 } from "react-native";
 
 // 아이콘
-import { AntDesign } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
-import { Octicons } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
-import { Feather } from "@expo/vector-icons";
+import {
+  AntDesign,
+  Ionicons,
+  Octicons,
+  MaterialIcons,
+  Feather,
+} from "@expo/vector-icons";
 
 // 폰트
 import {
@@ -32,7 +34,7 @@ import {
 import Svg, { Path, G, Mask, Rect } from "react-native-svg";
 import { getOutAxios } from "../../config/axiosAPI";
 
-export default function PesingerBordingList({ navigation, route }) {
+export default function PassengerBordingList({ navigation, route }) {
   // 탑승 종료 state
   const [finish, setFinish] = useState(false);
 
@@ -248,7 +250,7 @@ export default function PesingerBordingList({ navigation, route }) {
                 </View>
                 <TouchableOpacity
                   onPress={() => navigation.navigate("DiclationScreen")}
-                  style={styles.carpool_list_ticket_display_title_pesinger}
+                  style={styles.carpool_list_ticket_display_title_passenger}
                 >
                   <Feather name="bell" size={24} color="#d8d7d7" />
                   <Text style={styles.complaint_text}>신고</Text>
@@ -297,7 +299,7 @@ export default function PesingerBordingList({ navigation, route }) {
                 </View>
                 <TouchableOpacity
                   onPress={() => navigation.navigate("DiclationScreen")}
-                  style={styles.carpool_list_ticket_display_title_pesinger}
+                  style={styles.carpool_list_ticket_display_title_passenger}
                 >
                   <Feather name="bell" size={24} color="#d8d7d7" />
                   <Text style={styles.complaint_text}>신고</Text>
@@ -322,7 +324,7 @@ export default function PesingerBordingList({ navigation, route }) {
                 </View>
                 <TouchableOpacity
                   onPress={() => navigation.navigate("DiclationScreen")}
-                  style={styles.carpool_list_ticket_display_title_pesinger}
+                  style={styles.carpool_list_ticket_display_title_passenger}
                 >
                   <Feather name="bell" size={24} color="#d8d7d7" />
                   <Text style={styles.complaint_text}>신고</Text>
@@ -448,7 +450,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  carpool_list_ticket_display_title_pesinger: {
+  carpool_list_ticket_display_title_passenger: {
     height: 21,
     borderRadius: 5,
     justifyContent: "center",

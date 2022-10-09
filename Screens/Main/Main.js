@@ -322,7 +322,7 @@ export default function Main({ navigation, route }) {
                     if (memberData.auth === "DRIVER") {
                       navigation.navigate("BordingList", route.params);
                     } else {
-                      navigation.navigate("PesingerBordingList", route.params);
+                      navigation.navigate("PassengerBordingList", route.params);
                     }
                   }}
                 >
@@ -349,7 +349,7 @@ export default function Main({ navigation, route }) {
                     if (memberData.auth === "DRIVER") {
                       navigation.navigate("BordingList", route.params);
                     } else {
-                      navigation.navigate("PesingerBordingList", route.params);
+                      navigation.navigate("PassengerBordingList", route.params);
                     }
                   }}
                 >
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#3B67FF",
   },
 
-  carpool_list_ticket_display_title_pesinger: {
+  carpool_list_ticket_display_title_Passenger: {
     width: 37,
     height: 21,
     backgroundColor: "#A8BBFF",
@@ -538,7 +538,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  DriverPesingerModal: {
+  DriverPassengerModal: {
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
 
-  DriverPesingerModalView: {
+  DriverPassengerModalView: {
     backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,

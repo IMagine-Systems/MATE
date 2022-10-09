@@ -13,10 +13,12 @@ import {
 } from "react-native";
 
 // 아이콘
-import { AntDesign } from "@expo/vector-icons";
-import { Octicons } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
+import {
+  AntDesign,
+  Octicons,
+  MaterialIcons,
+  Ionicons,
+} from "@expo/vector-icons";
 
 // SVG
 import Svg, { Circle, Path } from "react-native-svg";
@@ -64,7 +66,7 @@ export default function TicketScreen({ navigation, route }) {
   //const localData = [route.params.area.name, "경운대학교"];
   //const localData = ["인동", "경운대학교"];
   // 입력창 state
-  const [pensingerCount, setPesingerCount] = useState("");
+  const [passengerCount, setPassengerCount] = useState("");
 
   // DateTimePicker State
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -153,8 +155,8 @@ export default function TicketScreen({ navigation, route }) {
   };
 
   // 입력창 핸들러
-  const onChangePesingerCout = (text) => {
-    setPesingerCount(text);
+  const onChangePassengerCout = (text) => {
+    setPassengerCount(text);
   };
 
   // 폰트 설정

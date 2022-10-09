@@ -42,9 +42,9 @@ export default function ProfileUpdateScreen({ navigation, route }) {
   const [memberData, setMemberData] = useState();
 
   // 드라이버 패신저 state
-  const [selectDriverPesinger, setSelectDriverPesinger] = useState([]);
+  const [selectDriverPassenger, setSelectDriverPassenger] = useState([]);
 
-  const selectDriverPesingerList = ["드라이버", "패신저"];
+  const selectDriverPassengerList = ["드라이버", "패신저"];
   const tempAPI = useRef({});
 
   // 학번, 학과 state
@@ -329,10 +329,10 @@ export default function ProfileUpdateScreen({ navigation, route }) {
               </View>
               <View style={{ alignItems: "center" }}>
                 <View style={styles.select_container}>
-                  {selectDriverPesingerList.map((selectData) => {
+                  {selectDriverPassengerList.map((selectData) => {
                     if (loading === false) {
                       //tempAPI.current.auth
-                      //selectDriverPesinger.push(memberData.auth === "DRIVER" ? "드라이버" : "패신저");
+                      //selectDriverPassenger.push(memberData.auth === "DRIVER" ? "드라이버" : "패신저");
                       console.log("1확인 : ", memberDataRef.current);
                       const strAuth =
                         memberData.auth === "DRIVER" ? "드라이버" : "패신저";
@@ -341,7 +341,7 @@ export default function ProfileUpdateScreen({ navigation, route }) {
                       return (
                         <TouchableOpacity
                           onPress={() => {
-                            setSelectDriverPesinger(([...prev]) => {
+                            setSelectDriverPassenger(([...prev]) => {
                               const id = prev.indexOf(selectData);
 
                               prev.splice(id, 1);
@@ -502,7 +502,7 @@ export default function ProfileUpdateScreen({ navigation, route }) {
                     studentId: studentId,
                     department: department,
                     goingSchoolDays: goingSchoolDays,
-                    auth: selectDriverPesinger[0],
+                    auth: selectDriverPassenger[0],
                     profileImageURI: image,
                   });
 

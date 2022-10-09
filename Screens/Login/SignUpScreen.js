@@ -47,8 +47,10 @@ export default function SignUpScreen({ navigation, route }) {
   const days = ["월", "화", "수", "목", "금"];
 
   // 드라이버 패신저 state
-  const [selectDriverPesinger, setSelectDriverPesinger] = useState(["패신저"]);
-  const selectDriverPesingerList = ["드라이버", "패신저"];
+  const [selectDriverPassenger, setSelectDriverPassenger] = useState([
+    "패신저",
+  ]);
+  const selectDriverPassengerList = ["드라이버", "패신저"];
 
   // 이미지 state
   const [image, setImage] = useState(null);
@@ -385,13 +387,13 @@ export default function SignUpScreen({ navigation, route }) {
                 <View>
                   <View style={{ alignItems: "center" }}>
                     <View style={styles.select_container}>
-                      {selectDriverPesingerList.map((selectData) => {
+                      {selectDriverPassengerList.map((selectData) => {
                         const isSelected =
-                          selectDriverPesinger.includes(selectData);
+                          selectDriverPassenger.includes(selectData);
                         return (
                           <TouchableOpacity
                             onPress={() => {
-                              setSelectDriverPesinger(([...prev]) => {
+                              setSelectDriverPassenger(([...prev]) => {
                                 const id = prev.indexOf(selectData);
 
                                 prev.splice(id, 1);
