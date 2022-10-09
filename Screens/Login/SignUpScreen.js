@@ -1,3 +1,4 @@
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -9,14 +10,15 @@ import {
   TextInput,
   Alert,
 } from "react-native";
-import React, { useState, useRef, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
-import { KeyboardAvoidingView } from "react-native";
+
 // firebase Storage 불러오기
 import { getStorage, ref, uploadBytes } from "firebase/storage";
+
 // 아이콘
 import { AntDesign } from "@expo/vector-icons";
 import Svg, { Path } from "react-native-svg";
+
 // 폰트
 import {
   useFonts,
@@ -70,10 +72,9 @@ export default function SignUpScreen({ navigation, route }) {
   const deviceHeight = Dimensions.get("window").height;
 
   // FormData state
-  const [ formDataProfile, setFormDataProfile ] = useState({});
+  const [formDataProfile, setFormDataProfile] = useState({});
   const formData = new FormData();
 
-  
   //const formData = new FormData(); 전역변수ㅜㅜ
 
   // 폰트 설정
@@ -105,22 +106,21 @@ export default function SignUpScreen({ navigation, route }) {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
-    });  
+    });
 
     if (!result.cancelled) {
       setImage(result.uri);
-      
+
       console.log("이미지 uri check : ", result.uri);
-      
- // key 값 image -> 협의 해서 정해야함. 이강우님, 김재용님 협의 필요. 
+
+      // key 값 image -> 협의 해서 정해야함. 이강우님, 김재용님 협의 필요.
 
       setFormDataProfile({
         uri: result.uri,
         type: "image/jpeg",
         name: `test.jpeg`,
       });
-      
-  
+
       // const variables = {
       //   studentNumber: "K12312LK",
       //   department: "computer",
@@ -138,31 +138,30 @@ export default function SignUpScreen({ navigation, route }) {
       //   ],
       // };
 
-      // formData.append("userData", { 
+      // formData.append("userData", {
       //   "string": JSON.stringify(variables),
       //   type: 'application/json'
       // });
-      
-    //   console.log(
-    //     "확인1 : ",
-    //     new Blob([JSON.stringify(variables)], { type: "application/json" })
-    //   );
-      
 
-    // 이미지, json 같이 보내고자 한다. blob으로 해서 보내줘야함. 해결 안됨.(패키지 조사!!)
-    //   const res = await axios.post(
-    //     `http://www.godseun.com/member/img`,
-    //     formData,
-    //     {
-    //       headers: {
-    //         Accept: 'application/json',
-    //         Authorization: `Bearer ${userData.token}`,
-    //         "content-type": "multipart/form-data",
-    //       },
-    //     }
-    //   );
+      //   console.log(
+      //     "확인1 : ",
+      //     new Blob([JSON.stringify(variables)], { type: "application/json" })
+      //   );
 
-    /*
+      // 이미지, json 같이 보내고자 한다. blob으로 해서 보내줘야함. 해결 안됨.(패키지 조사!!)
+      //   const res = await axios.post(
+      //     `http://www.godseun.com/member/img`,
+      //     formData,
+      //     {
+      //       headers: {
+      //         Accept: 'application/json',
+      //         Authorization: `Bearer ${userData.token}`,
+      //         "content-type": "multipart/form-data",
+      //       },
+      //     }
+      //   );
+
+      /*
     // 프로필 선택후 서버로 전송. 일단 테스트
     const res = await axios.post(
         `http://www.godseun.com/member/new`,
@@ -176,7 +175,7 @@ export default function SignUpScreen({ navigation, route }) {
         );
       */
 
-    //setUserData((prev) => ({ ...prev, ["profileImage"]: result.uri }));
+      //setUserData((prev) => ({ ...prev, ["profileImage"]: result.uri }));
     }
   };
 
@@ -388,7 +387,8 @@ export default function SignUpScreen({ navigation, route }) {
                   <View style={{ alignItems: "center" }}>
                     <View style={styles.select_container}>
                       {selectDriverPesingerList.map((selectData) => {
-                        const isSelected = selectDriverPesinger.includes(selectData);
+                        const isSelected =
+                          selectDriverPesinger.includes(selectData);
                         return (
                           <TouchableOpacity
                             onPress={() => {
@@ -513,8 +513,10 @@ export default function SignUpScreen({ navigation, route }) {
                         <TouchableOpacity
                           onPress={() => {
                             setGoingSchoolDays(([...prev]) => {
-                                console.log("prev : ", prev)
-                              const id = prev.findIndex((days) => days.dayCode === day);
+                              console.log("prev : ", prev);
+                              const id = prev.findIndex(
+                                (days) => days.dayCode === day
+                              );
                               console.log(id);
                               //console.log(id); // 날짜 있으면 id 값이 0, 없으면 -1(등교일 추가).
                               if (id > -1) {
@@ -570,12 +572,15 @@ export default function SignUpScreen({ navigation, route }) {
                         });
 
                         //formData.append('userData', userData)
-                        console.log("서버 전송전 이미지 url 확인 : ", formDataProfile);
-                        formData.append("image",formDataProfile);
+                        console.log(
+                          "서버 전송전 이미지 url 확인 : ",
+                          formDataProfile
+                        );
+                        formData.append("image", formDataProfile);
 
-                        formData.append("userData", { 
-                          "string": JSON.stringify(userData),
-                          type: 'application/json'
+                        formData.append("userData", {
+                          string: JSON.stringify(userData),
+                          type: "application/json",
                         });
 
                         // http://www.godseun.com/member/img
@@ -596,13 +601,13 @@ export default function SignUpScreen({ navigation, route }) {
                         );*/
 
                         memberAxios(formData, userData)
-                        .then((res) => { 
-                          console.log("회원가입 res : ", res);
-                          alert("회원가입 성공 하였습나다.");
-                          navigation.navigate("Main", userData);                        
-                        })
-                        .catch((error) => console.warn(error));                    
-                                                
+                          .then((res) => {
+                            console.log("회원가입 res : ", res);
+                            alert("회원가입 성공 하였습나다.");
+                            navigation.navigate("Main", userData);
+                          })
+                          .catch((error) => console.warn(error));
+
                         /*
                         const res = await axios.post(
                           `http://www.godseun.com/member/new`,

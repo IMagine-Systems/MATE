@@ -1,21 +1,19 @@
 // 1:1 문의
 // 장건일 파트장님 호스트주소 ;: "http://3.37.159.244:8080/QuestionBoard/new",
 
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Platform,
-  Image,
   Dimensions,
   TextInput,
   useWindowDimensions,
 } from "react-native";
 
-import React, { useState, useRef, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
-import { KeyboardAvoidingView } from "react-native";
 // firebase Storage 불러오기
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 // 아이콘
@@ -242,17 +240,22 @@ export default function InquiryScreen({ navigation, route }) {
                     etcContent.length > 0 &&
                     email.length > 0
                   ) {
-                    setInquiryAxios(userTokenRef.current, email, title, etcContent)
+                    setInquiryAxios(
+                      userTokenRef.current,
+                      email,
+                      title,
+                      etcContent
+                    )
                       .then((res) => {
                         console.log("문의 제출 응답 데이터 확인 : ", res.data);
                         alert("문의 작성 했습니다.");
                         navigation.navigate("Setting", route.params);
                       })
-                      .catch((error) => { 
-                        console.warn(error);                        
+                      .catch((error) => {
+                        console.warn(error);
                       });
                   } else {
-                    alert("작성 안한 부분 있습니다.");        
+                    alert("작성 안한 부분 있습니다.");
                   }
                 }}
                 style={styles.button_container_next_button}

@@ -6,11 +6,11 @@ import {
   Platform,
   Image,
   Dimensions,
-  TextInput,
 } from "react-native";
 import React, { useState, useRef, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
-import { KeyboardAvoidingView } from "react-native";
+
+import axios from "axios";
 // firebase Storage 불러오기
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 // 아이콘
@@ -27,7 +27,6 @@ import {
   NotoSansKR_700Bold,
   NotoSansKR_900Black,
 } from "@expo-google-fonts/noto-sans-kr";
-import axios from "axios";
 import { SafeAreaFrameContext } from "react-native-safe-area-context";
 import {
   getProfileAxios,
@@ -72,7 +71,7 @@ export default function ProfileUpdateScreen({ navigation, route }) {
 
   // 로딩
   const [loading, setLoading] = useState(true);
-  const [ imgClick, setImgClick ] = useState(false);
+  const [imgClick, setImgClick] = useState(false);
 
   // FormData state
   const [formDataProfile, setFormDataProfile] = useState({});
@@ -242,11 +241,11 @@ export default function ProfileUpdateScreen({ navigation, route }) {
             }}
             style={{ width: 60, height: 60, borderRadius: 50 }}
           />
-        )
+        );
       }
     } else {
       if (image === "") {
-        if (memberData.profileImage === null) { 
+        if (memberData.profileImage === null) {
           return (
             <Svg
               width={60}
@@ -272,7 +271,7 @@ export default function ProfileUpdateScreen({ navigation, route }) {
               />
             </Svg>
           );
-        } 
+        }
       } else {
         return (
           <Image
@@ -281,7 +280,7 @@ export default function ProfileUpdateScreen({ navigation, route }) {
             }}
             style={{ width: 60, height: 60, borderRadius: 50 }}
           />
-        )
+        );
       }
     }
   };
@@ -394,9 +393,7 @@ export default function ProfileUpdateScreen({ navigation, route }) {
                   onPress={pickImage}
                   style={styles.profile_container_input}
                 >
-                  {
-                    showProfileImg()
-                  }
+                  {showProfileImg()}
                 </TouchableOpacity>
               </View>
             </View>
