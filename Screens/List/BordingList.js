@@ -20,10 +20,9 @@ import { Feather } from "@expo/vector-icons";
 // 폰트
 import {
   useFonts,
-  NotoSansKR_400Regular,
-  NotoSansKR_500Mediu,
   NotoSansKR_100Thin,
   NotoSansKR_300Light,
+  NotoSansKR_400Regular,
   NotoSansKR_500Medium,
   NotoSansKR_700Bold,
   NotoSansKR_900Black,

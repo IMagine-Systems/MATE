@@ -9,9 +9,7 @@ import {
   Dimensions,
   PanResponder,
   TouchableOpacity,
-  KeyboardAvoidingView,
   Keyboard,
-  Platform,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 
