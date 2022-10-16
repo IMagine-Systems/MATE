@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,17 +7,17 @@ import {
   Platform,
   Image,
   Dimensions,
-} from "react-native";
-import * as ImagePicker from "expo-image-picker";
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
-import BasicUserDataInputForm from "./BasicUserDataInputForm";
+import BasicUserDataInputForm from './BasicUserDataInputForm';
+import NoProfileImageSvg from './components/NoProfileImageSvg';
 
 // firebase Storage 불러오기
-import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { getStorage, ref, uploadBytes } from 'firebase/storage';
 
 // 아이콘
-import { AntDesign } from "@expo/vector-icons";
-import Svg, { Path } from "react-native-svg";
+import { AntDesign } from '@expo/vector-icons';
 
 // 폰트
 import {
@@ -26,35 +26,36 @@ import {
   NotoSansKR_500Medium,
   NotoSansKR_700Bold,
   NotoSansKR_900Black,
-} from "@expo-google-fonts/noto-sans-kr";
+} from '@expo-google-fonts/noto-sans-kr';
 
 // API 모듈
-import { memberAxios } from "../../../config/axiosAPI";
+import { memberAxios } from '../../../config/axiosAPI';
+
+const USER_CATEGORY = ['드라이버', '패신저'];
+const WEEKDAYS = ['월', '화', '수', '목', '금'];
 
 export default function SignUpScreen({ navigation, route }) {
   // Base64 선언 및 할당
-  window.btoa = require("Base64").btoa;
+  window.btoa = require('Base64').btoa;
 
   // 등교 데이터 state
   const [goingSchoolDays, setGoingSchoolDays] = useState([]);
-  const days = ["월", "화", "수", "목", "금"];
 
   // 드라이버 패신저 state
   const [selectDriverPassenger, setSelectDriverPassenger] = useState([
-    "패신저",
+    '패신저',
   ]);
-  const selectDriverPassengerList = ["드라이버", "패신저"];
 
   // 이미지 state
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
 
   // useRef
-  const studentIdRef = useRef("");
-  const departmentRef = useRef("");
+  const studentIdRef = useRef('');
+  const departmentRef = useRef('');
   const goingSchoolDaysRef = useRef([]);
-  const authRef = useRef("");
-  const profileImgUriRef = useRef("");
+  const authRef = useRef('');
+  const profileImgUriRef = useRef('');
 
   // 회원정보 객체 state
   const [userData, setUserData] = useState(route.params);
@@ -62,7 +63,7 @@ export default function SignUpScreen({ navigation, route }) {
   // 다음 버튼 state
   const [isBasicUserDataAccepted, setIsBasicUserDataAccepted] = useState(false);
 
-  const deviceHeight = Dimensions.get("window").height;
+  const deviceHeight = Dimensions.get('window').height;
 
   // FormData state
   const [formDataProfile, setFormDataProfile] = useState({});
@@ -104,14 +105,14 @@ export default function SignUpScreen({ navigation, route }) {
     if (!result.cancelled) {
       setImage(result.uri);
 
-      console.log("이미지 uri check : ", result.uri);
+      console.log('이미지 uri check : ', result.uri);
 
       // key 값 image -> 협의 해서 정해야함. 이강우님, 김재용님 협의 필요.
 
       setFormDataProfile({
         uri: result.uri,
-        type: "image/jpeg",
-        name: `test.jpeg`,
+        type: 'image/jpeg',
+        name: 'test.jpeg',
       });
 
       // const variables = {
@@ -175,13 +176,12 @@ export default function SignUpScreen({ navigation, route }) {
   const uploadImage = async () => {
     setUploading(true);
 
-    //
     const storage = getStorage(); // 자신 firebase storage 경로
     const refs = ref(
       storage,
-      `images/${userData.studentId}/${userData.name}.jpg`
+      `images/${userData.studentId}/${userData.name}.jpg`,
     ); // firebase storage 경로에 넣을 ref 얻는다.
-    console.log("fire storage ref : ", refs);
+    console.log('fire storage ref : ', refs);
 
     // Convert Image to array of bytes.
 
@@ -193,37 +193,41 @@ export default function SignUpScreen({ navigation, route }) {
     setImage(null);
   };
 
+  const handleOnBackArrowPress = () => {
+    setIsBasicUserDataAccepted(false);
+  };
+
   return (
-    <View style={{ flex: 1, backgroundColor: "#F5F5F5" }}>
+    <View style={{ flex: 1, backgroundColor: '#F5F5F5' }}>
       {isBasicUserDataAccepted ? (
         <View style={styles.container}>
-          <View style={[styles.header, { justifyContent: "flex-end" }]}>
+          <View style={[styles.header, { justifyContent: 'flex-end' }]}>
             <TouchableOpacity
-              onPress={() => setIsBasicUserDataAccepted(false)}
+              onPress={handleOnBackArrowPress}
               style={{
                 width: 35,
                 height: 35,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
               <AntDesign name="left" size={25} color="black" />
             </TouchableOpacity>
-            <View style={{ marginLeft: 5, justifyContent: "center" }}>
-              <Text style={{ fontSize: 18, fontFamily: "NotoSansKR_700Bold" }}>
+            <View style={{ marginLeft: 5, justifyContent: 'center' }}>
+              <Text style={{ fontSize: 18, fontFamily: 'NotoSansKR_700Bold' }}>
                 아래에 정보를 입력해주세요
               </Text>
             </View>
           </View>
           <View style={{ flex: deviceHeight < 700 ? 1 : 0.6 }}>
             <View>
-              <View style={{ alignItems: "center" }}>
+              <View style={{ alignItems: 'center' }}>
                 <View style={styles.select_container}>
-                  {selectDriverPassengerList.map((selectData) => {
+                  {USER_CATEGORY.map(selectData => {
                     const isSelected =
                       selectDriverPassenger.includes(selectData);
                     return (
                       <TouchableOpacity
+                        key={selectData}
                         onPress={() => {
                           setSelectDriverPassenger(([...prev]) => {
                             const id = prev.indexOf(selectData);
@@ -231,13 +235,13 @@ export default function SignUpScreen({ navigation, route }) {
                             prev.splice(id, 1);
                             prev.push(selectData);
                             console.log(prev);
-                            setUserData((data) => {
-                              if (prev[0] === "드라이버") {
-                                prev[0] = "드라이버";
-                                return { ...data, ["auth"]: "DRIVER" };
+                            setUserData(data => {
+                              if (prev[0] === '드라이버') {
+                                prev[0] = '드라이버';
+                                return { ...data, ['auth']: 'DRIVER' };
                               } else {
-                                prev[0] = "패신저";
-                                return { ...data, ["auth"]: "PASSENGER" };
+                                prev[0] = '패신저';
+                                return { ...data, ['auth']: 'PASSENGER' };
                               }
                             });
                             return prev;
@@ -247,21 +251,19 @@ export default function SignUpScreen({ navigation, route }) {
                           isSelected
                             ? styles.select_container_active_btn
                             : styles.select_container_non_active_btn
-                        }
-                      >
+                        }>
                         <Text
                           style={
                             isSelected
                               ? {
-                                  color: "#FFFFFF",
-                                  fontFamily: "NotoSansKR_700Bold",
+                                  color: '#FFFFFF',
+                                  fontFamily: 'NotoSansKR_700Bold',
                                 }
                               : {
-                                  color: "#007AFF",
-                                  fontFamily: "NotoSansKR_700Bold",
+                                  color: '#007AFF',
+                                  fontFamily: 'NotoSansKR_700Bold',
                                 }
-                          }
-                        >
+                          }>
                           {selectData}
                         </Text>
                       </TouchableOpacity>
@@ -273,48 +275,23 @@ export default function SignUpScreen({ navigation, route }) {
                 <Text
                   style={{
                     fontSize: 10,
-                    color: "#989595",
-                    fontFamily: "NotoSansKR_400Regular",
-                  }}
-                >
+                    color: '#989595',
+                    fontFamily: 'NotoSansKR_400Regular',
+                  }}>
                   카풀에 운행 가능한 차량이 있다면 ‘드라이버’를 선택해 주세요
                 </Text>
               </View>
               <View style={styles.profile_container}>
                 <TouchableOpacity
                   onPress={pickImage}
-                  style={styles.profile_container_input}
-                >
-                  {!image && (
-                    <Svg
-                      width={60}
-                      height={60}
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <Path
-                        d="M60 30c0 16.569-13.431 30-30 30C13.431 60 0 46.569 0 30 0 13.431 13.431 0 30 0c16.569 0 30 13.431 30 30Z"
-                        fill="#D9D9D9"
-                      />
-                      <Path
-                        d="M39.45 20.95c0 5.494-4.455 9.949-9.95 9.949-5.495 0-9.95-4.455-9.95-9.95 0-5.495 4.455-9.949 9.95-9.949 5.495 0 9.95 4.454 9.95 9.95ZM45.505 42.579c0 5.495-7.166 6.92-16.005 6.92-8.84 0-16.006-1.425-16.006-6.92s7.166-9.95 16.006-9.95 16.005 4.455 16.005 9.95Z"
-                        fill="#fff"
-                      />
-                      <Path
-                        d="M60 50.5a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"
-                        fill="#007AFF"
-                      />
-                      <Path
-                        d="M51.88 53.68h1.308v-2.544h2.424v-1.26h-2.424V47.32H51.88v2.556h-2.424v1.26h2.424v2.544Z"
-                        fill="#fff"
-                      />
-                    </Svg>
-                  )}
-                  {image && (
+                  style={styles.profile_container_input}>
+                  {image ? (
                     <Image
                       source={{ uri: image }}
                       style={{ width: 60, height: 60, borderRadius: 50 }}
                     />
+                  ) : (
+                    <NoProfileImageSvg />
                   )}
                 </TouchableOpacity>
               </View>
@@ -329,25 +306,25 @@ export default function SignUpScreen({ navigation, route }) {
 
               <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-evenly",
-                  alignItems: "center",
-                  marginTop: Platform.OS === "ios" ? 44 : 0,
-                }}
-              >
-                {days.map((day) => {
-                  const isSelected = goingSchoolDays.filter((item) => {
+                  flexDirection: 'row',
+                  justifyContent: 'space-evenly',
+                  alignItems: 'center',
+                  marginTop: Platform.OS === 'ios' ? 44 : 0,
+                }}>
+                {WEEKDAYS.map(day => {
+                  const isSelected = goingSchoolDays.filter(item => {
                     return item.dayCode === day;
                   }).length;
 
-                  console.log("확인 : ", isSelected);
+                  console.log('확인 : ', isSelected);
                   return (
                     <TouchableOpacity
+                      key={day}
                       onPress={() => {
                         setGoingSchoolDays(([...prev]) => {
-                          console.log("prev : ", prev);
+                          console.log('prev : ', prev);
                           const id = prev.findIndex(
-                            (days) => days.dayCode === day
+                            days => days.dayCode === day,
                           );
                           console.log(id);
                           //console.log(id); // 날짜 있으면 id 값이 0, 없으면 -1(등교일 추가).
@@ -356,9 +333,9 @@ export default function SignUpScreen({ navigation, route }) {
                           } else {
                             prev.push({ dayCode: day });
                             console.log(prev);
-                            setUserData((data) => ({
+                            setUserData(data => ({
                               ...data,
-                              ["memberTimeTable"]: prev,
+                              ['memberTimeTable']: prev,
                             }));
 
                             //console.log("등교일 입력후 userData 현황 : ", userData)
@@ -367,22 +344,20 @@ export default function SignUpScreen({ navigation, route }) {
                         });
                       }}
                       style={{
-                        backgroundColor: isSelected ? "#007AFF" : "#FFFFFF",
+                        backgroundColor: isSelected ? '#007AFF' : '#FFFFFF',
                         width: 35,
                         height: 35,
-                        justifyContent: "center",
-                        alignItems: "center",
+                        justifyContent: 'center',
+                        alignItems: 'center',
                         borderRadius: isSelected ? 50 : 0,
-                      }}
-                    >
+                      }}>
                       <Text
                         style={{
-                          color: isSelected ? "#FFFFFF" : "#989595",
+                          color: isSelected ? '#FFFFFF' : '#989595',
                           fontFamily: isSelected
-                            ? "NotoSansKR_700Bold"
-                            : "NotoSansKR_400Regular",
-                        }}
-                      >
+                            ? 'NotoSansKR_700Bold'
+                            : 'NotoSansKR_400Regular',
+                        }}>
                         {day}
                       </Text>
                     </TouchableOpacity>
@@ -399,20 +374,20 @@ export default function SignUpScreen({ navigation, route }) {
                   // 학번, 학과, 등교일 입력 했는지 검증
 
                   if (userData.memberTimeTable.length > 0) {
-                    console.log("meber/new 경로로 서버에게 전송 : ", {
+                    console.log('meber/new 경로로 서버에게 전송 : ', {
                       ...userData,
                     });
 
                     //formData.append('userData', userData)
                     console.log(
-                      "서버 전송전 이미지 url 확인 : ",
-                      formDataProfile
+                      '서버 전송전 이미지 url 확인 : ',
+                      formDataProfile,
                     );
-                    formData.append("image", formDataProfile);
+                    formData.append('image', formDataProfile);
 
-                    formData.append("userData", {
+                    formData.append('userData', {
                       string: JSON.stringify(userData),
-                      type: "application/json",
+                      type: 'application/json',
                     });
 
                     // http://www.godseun.com/member/img
@@ -433,12 +408,12 @@ export default function SignUpScreen({ navigation, route }) {
                         );*/
 
                     memberAxios(formData, userData)
-                      .then((res) => {
-                        console.log("회원가입 res : ", res);
-                        alert("회원가입 성공 하였습나다.");
-                        navigation.navigate("Main", userData);
+                      .then(res => {
+                        console.log('회원가입 res : ', res);
+                        alert('회원가입 성공 하였습나다.');
+                        navigation.navigate('Main', userData);
                       })
-                      .catch((error) => console.warn(error));
+                      .catch(error => console.warn(error));
 
                     /*
                         const res = await axios.post(
@@ -455,15 +430,13 @@ export default function SignUpScreen({ navigation, route }) {
                   }
 
                   //navigation.navigate("Main", route.params.token);
-                }}
-              >
+                }}>
                 <Text
                   style={{
-                    color: "#FFFFFF",
-                    fontFamily: "NotoSansKR_700Bold",
+                    color: '#FFFFFF',
+                    fontFamily: 'NotoSansKR_700Bold',
                     fontSize: 23,
-                  }}
-                >
+                  }}>
                   완료하기
                 </Text>
               </TouchableOpacity>
@@ -486,7 +459,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 20,
     paddingRight: 20,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
   },
 
   header: {
@@ -495,54 +468,54 @@ const styles = StyleSheet.create({
 
   title_container: {
     marginTop: 10,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   title: {
     fontSize: 25,
-    fontWeight: "400",
+    fontWeight: '400',
   },
 
   stepbar_container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginTop: 10,
     marginBottom: 10,
   },
 
   select_container: {
-    borderColor: "#007AFF",
+    borderColor: '#007AFF',
     borderWidth: 1,
     width: 312,
     height: 50,
     borderRadius: 30,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: 30,
   },
 
   select_container_active_btn: {
     width: 156,
     height: 50,
-    backgroundColor: "#007AFF",
+    backgroundColor: '#007AFF',
     borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 0.5,
-    borderColor: "#d9d9d9",
+    borderColor: '#d9d9d9',
   },
 
   select_container_non_active_btn: {
     width: 156,
     height: 50,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   profile_container: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 20,
     marginBottom: 20,
   },
@@ -550,16 +523,16 @@ const styles = StyleSheet.create({
   profile_container_input: {
     width: 60,
     height: 60,
-    backgroundColor: "#d9d9d9",
+    backgroundColor: '#d9d9d9',
     borderRadius: 50,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   form_container_textinput: {
-    borderBottomColor: "#D9D9D9",
+    borderBottomColor: '#D9D9D9',
     borderBottomWidth: 1,
-    fontWeight: "400",
+    fontWeight: '400',
     paddingTop: 10,
     paddingBottom: 10,
   },
@@ -569,7 +542,7 @@ const styles = StyleSheet.create({
   },
 
   message_container: {
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
     paddingBottom: 20,
     marginTop: 5,
   },
@@ -577,21 +550,21 @@ const styles = StyleSheet.create({
   message_container_text: {
     fontSize: 10,
     marginTop: 10,
-    color: "#989595",
-    fontFamily: "NotoSansKR_400Regular",
+    color: '#989595',
+    fontFamily: 'NotoSansKR_400Regular',
   },
 
   button_container: {
     flex: 0.3,
-    justifyContent: "center",
+    justifyContent: 'center',
     marginBottom: 10,
   },
 
   button_container_next_button: {
-    backgroundColor: "#007AFF",
+    backgroundColor: '#007AFF',
     height: 55,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 15,
   },
 });

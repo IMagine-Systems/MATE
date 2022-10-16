@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
@@ -7,35 +7,35 @@ import {
   Dimensions,
   TouchableOpacity,
   Alert,
-} from "react-native";
+} from 'react-native';
 
-const deviceHeight = Dimensions.get("window").height;
+const deviceHeight = Dimensions.get('window').height;
 
 export default function BasicUserDataInputForm({
   userData,
   setUserData,
   setIsBasicUserDataAccepted,
 }) {
-  const handleOnNameTextChange = (text) => {
-    setUserData((prev) => ({ ...prev, memberName: text }));
+  const handleOnNameTextChange = text => {
+    setUserData(prev => ({ ...prev, memberName: text }));
   };
 
-  const handleOnStudentIdTextChange = (text) => {
-    setUserData((prev) => ({
+  const handleOnStudentIdTextChange = text => {
+    setUserData(prev => ({
       ...prev,
       studentNumber: text,
-      area: "INDONG",
+      area: 'INDONG',
     }));
   };
 
-  const handleOnDepartmentTextChange = (text) => {
-    setUserData((prev) => ({ ...prev, department: text }));
+  const handleOnDepartmentTextChange = text => {
+    setUserData(prev => ({ ...prev, department: text }));
   };
 
   // 재확인 알림창 확인 버튼 클릭시 실행되는 함수
   const handleOnReconfirmAlertOKButtonPress = () => {
-    userData.auth = true;
-    userData.auth = "PASSENGER";
+    userData.member = true;
+    userData.auth = 'PASSENGER';
     console.log(userData);
     setIsBasicUserDataAccepted(true);
   };
@@ -43,33 +43,33 @@ export default function BasicUserDataInputForm({
   // Alert
   const reconfirmAlert = () =>
     Alert.alert(
-      "입력하신 정보가 정확한가요?",
-      `한번 입력하신 정보는 수정 및 변경 불가합니다.정확히 확인 후 입력해주세요!`,
+      '입력하신 정보가 정확한가요?',
+      '한번 입력하신 정보는 수정 및 변경 불가합니다.정확히 확인 후 입력해주세요!',
       [
         {
-          text: "수정",
-          style: "destructive",
+          text: '수정',
+          style: 'destructive',
         },
         {
-          text: "확인",
+          text: '확인',
           onPress: handleOnReconfirmAlertOKButtonPress,
-          style: "defalut",
+          style: 'defalut',
         },
       ],
-      { cancelable: false }
+      { cancelable: false },
     );
 
   const failAlert = () =>
     Alert.alert(
-      "입력 안한 항목이 있습니다.",
-      `이름, 학번, 학과 입력했는지${"\n"}확인 하시길 바랍니다.`,
+      '입력 안한 항목이 있습니다.',
+      `이름, 학번, 학과 입력했는지${'\n'}확인 하시길 바랍니다.`,
       [
         {
-          text: "확인",
-          style: "default",
+          text: '확인',
+          style: 'default',
         },
       ],
-      { cancelable: false }
+      { cancelable: false },
     );
 
   // 유저가 다음 버튼 눌렀을 때 유저 입력 정보 백엔드로 전송 처리하고, 페이지 이동시키는 함수
@@ -78,9 +78,9 @@ export default function BasicUserDataInputForm({
     // TODO 로직이 이게 맞나 모르겠다.
     // TODO 유저 중복 체크 검증은 되어 있는지? -> 백엔드 팀과 협의
     if (
-      userData.memberName.length >= 2 &&
-      userData.studentNumber.length >= 9 &&
-      userData.department.length > 0
+      userData.memberName?.length >= 2 &&
+      userData.studentNumber?.length >= 9 &&
+      userData.department?.length > 0
     ) {
       reconfirmAlert();
     } else {
@@ -102,9 +102,9 @@ export default function BasicUserDataInputForm({
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { justifyContent: "flex-end" }]}>
+      <View style={[styles.header, { justifyContent: 'flex-end' }]}>
         <View style={{ marginLeft: 5 }}>
-          <Text style={{ fontSize: 18, fontFamily: "NotoSansKR_700Bold" }}>
+          <Text style={{ fontSize: 18, fontFamily: 'NotoSansKR_700Bold' }}>
             아래에 정보를 입력해주세요
           </Text>
         </View>
@@ -115,21 +115,21 @@ export default function BasicUserDataInputForm({
             value={userData.memberName}
             onChangeText={handleOnNameTextChange}
             placeholder="이름"
-            placeholderTextColor={"#2E2E2E"}
+            placeholderTextColor={'#2E2E2E'}
             style={styles.textInput}
           />
           <TextInput
             value={userData.studentNumber}
             onChangeText={handleOnStudentIdTextChange}
             placeholder="학번"
-            placeholderTextColor={"#2E2E2E"}
+            placeholderTextColor={'#2E2E2E'}
             style={styles.textInput}
           />
           <TextInput
             value={userData.department}
             onChangeText={handleOnDepartmentTextChange}
             placeholder="학과"
-            placeholderTextColor={"#2E2E2E"}
+            placeholderTextColor={'#2E2E2E'}
             style={styles.textInput}
           />
         </View>
@@ -138,15 +138,13 @@ export default function BasicUserDataInputForm({
         <View style={styles.button_container}>
           <TouchableOpacity
             style={styles.button_container_next_button}
-            onPress={handleOnNextButtonPress}
-          >
+            onPress={handleOnNextButtonPress}>
             <Text
               style={{
-                color: "#FFFFFF",
-                fontFamily: "NotoSansKR_700Bold",
+                color: '#FFFFFF',
+                fontFamily: 'NotoSansKR_700Bold',
                 fontSize: 23,
-              }}
-            >
+              }}>
               다음
             </Text>
           </TouchableOpacity>
@@ -161,7 +159,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 20,
     paddingRight: 20,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
   },
 
   header: {
@@ -169,11 +167,11 @@ const styles = StyleSheet.create({
   },
 
   textInput: {
-    width: "50%",
+    width: '50%',
     paddingBottom: 13,
     marginBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "#D9D9D9",
+    borderBottomColor: '#D9D9D9',
   },
 
   footer: {
@@ -182,15 +180,15 @@ const styles = StyleSheet.create({
 
   button_container: {
     flex: 0.3,
-    justifyContent: "center",
+    justifyContent: 'center',
     marginBottom: 10,
   },
 
   button_container_next_button: {
-    backgroundColor: "#007AFF",
+    backgroundColor: '#007AFF',
     height: 55,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 15,
   },
 });
