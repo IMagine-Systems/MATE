@@ -6,11 +6,11 @@ import {
   Platform,
   Image,
   Dimensions,
-  TextInput,
 } from "react-native";
 import React, { useState, useRef, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
-import { KeyboardAvoidingView } from "react-native";
+
+import axios from "axios";
 // firebase Storage 불러오기
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 // 아이콘
@@ -19,15 +19,13 @@ import Svg, { Path } from "react-native-svg";
 // 폰트
 import {
   useFonts,
-  NotoSansKR_400Regular,
-  NotoSansKR_500Mediu,
   NotoSansKR_100Thin,
   NotoSansKR_300Light,
+  NotoSansKR_400Regular,
   NotoSansKR_500Medium,
   NotoSansKR_700Bold,
   NotoSansKR_900Black,
 } from "@expo-google-fonts/noto-sans-kr";
-import axios from "axios";
 import { SafeAreaFrameContext } from "react-native-safe-area-context";
 import {
   getProfileAxios,
@@ -44,9 +42,9 @@ export default function ProfileUpdateScreen({ navigation, route }) {
   const [memberData, setMemberData] = useState();
 
   // 드라이버 패신저 state
-  const [selectDriverPesinger, setSelectDriverPesinger] = useState([]);
+  const [selectDriverPassenger, setSelectDriverPassenger] = useState([]);
 
-  const selectDriverPesingerList = ["드라이버", "패신저"];
+  const selectDriverPassengerList = ["드라이버", "패신저"];
   const tempAPI = useRef({});
 
   // 학번, 학과 state
@@ -72,7 +70,7 @@ export default function ProfileUpdateScreen({ navigation, route }) {
 
   // 로딩
   const [loading, setLoading] = useState(true);
-  const [ imgClick, setImgClick ] = useState(false);
+  const [imgClick, setImgClick] = useState(false);
 
   // FormData state
   const [formDataProfile, setFormDataProfile] = useState({});
@@ -242,11 +240,11 @@ export default function ProfileUpdateScreen({ navigation, route }) {
             }}
             style={{ width: 60, height: 60, borderRadius: 50 }}
           />
-        )
+        );
       }
     } else {
       if (image === "") {
-        if (memberData.profileImage === null) { 
+        if (memberData.profileImage === null) {
           return (
             <Svg
               width={60}
@@ -272,7 +270,7 @@ export default function ProfileUpdateScreen({ navigation, route }) {
               />
             </Svg>
           );
-        } 
+        }
       } else {
         return (
           <Image
@@ -281,7 +279,7 @@ export default function ProfileUpdateScreen({ navigation, route }) {
             }}
             style={{ width: 60, height: 60, borderRadius: 50 }}
           />
-        )
+        );
       }
     }
   };
@@ -331,10 +329,10 @@ export default function ProfileUpdateScreen({ navigation, route }) {
               </View>
               <View style={{ alignItems: "center" }}>
                 <View style={styles.select_container}>
-                  {selectDriverPesingerList.map((selectData) => {
+                  {selectDriverPassengerList.map((selectData) => {
                     if (loading === false) {
                       //tempAPI.current.auth
-                      //selectDriverPesinger.push(memberData.auth === "DRIVER" ? "드라이버" : "패신저");
+                      //selectDriverPassenger.push(memberData.auth === "DRIVER" ? "드라이버" : "패신저");
                       console.log("1확인 : ", memberDataRef.current);
                       const strAuth =
                         memberData.auth === "DRIVER" ? "드라이버" : "패신저";
@@ -343,7 +341,7 @@ export default function ProfileUpdateScreen({ navigation, route }) {
                       return (
                         <TouchableOpacity
                           onPress={() => {
-                            setSelectDriverPesinger(([...prev]) => {
+                            setSelectDriverPassenger(([...prev]) => {
                               const id = prev.indexOf(selectData);
 
                               prev.splice(id, 1);
@@ -394,9 +392,7 @@ export default function ProfileUpdateScreen({ navigation, route }) {
                   onPress={pickImage}
                   style={styles.profile_container_input}
                 >
-                  {
-                    showProfileImg()
-                  }
+                  {showProfileImg()}
                 </TouchableOpacity>
               </View>
             </View>
@@ -506,7 +502,7 @@ export default function ProfileUpdateScreen({ navigation, route }) {
                     studentId: studentId,
                     department: department,
                     goingSchoolDays: goingSchoolDays,
-                    auth: selectDriverPesinger[0],
+                    auth: selectDriverPassenger[0],
                     profileImageURI: image,
                   });
 

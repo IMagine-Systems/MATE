@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const BASE_URL = `http://3.37.159.244:8080`;
+export const BASE_URL = `http://3.37.159.244:8090`;
 
 //const KIM_BASE_URL = `http://www.godseun.com`; // 김재용 백엔드 url
 // const JANG_BASE_URL = `http://3.37.159.244:8080`; // 장건일 백엔드 url
@@ -89,14 +89,11 @@ export function updateProfileAxios(formData, token) {
 }
 // 자신의 이미지 불러오기
 export function getProfileImgAxios(token, imgURL) {
-  return axios.get(
-    `${BASE_URL}/member/profile${imgURL}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return axios.get(`${BASE_URL}/member/profile${imgURL}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 }
 
 // 카풀 티켓 생성
@@ -150,48 +147,44 @@ export function createTicketAxios(
     }
 */
 export function getTicketListAxios(token) {
-    return axios.get(
-        `${BASE_URL}/ticket/list`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
-        }
-    )
+  return axios.get(`${BASE_URL}/ticket/list`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 }
 
 // 카풀 상세 정보 보기
 export function readTicketAxios(token, ticketId) {
-    return (
-        axios.get(`${BASE_URL}/ticket/read/${ticketId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
-        })
-    )
+  return axios.get(`${BASE_URL}/ticket/read/${ticketId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 }
 
 // 카풀 티켓리스트 삭제
 export function deleteTicketAxios(token, ticketId) {
-    return axios.get(
-      `${BASE_URL}/ticket/delete/${ticketId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-  }
+  return axios.get(`${BASE_URL}/ticket/delete/${ticketId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
 // 카풀 티켓 수정
-  export function updateTicketAxios(token, ticketId) {
-    return axios.get(
-      `${BASE_URL}/ticket/update/${ticketId}`, {
-        status: "CANCEL"
-      },{
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-  }
+export function updateTicketAxios(token, ticketId) {
+  return axios.get(
+    `${BASE_URL}/ticket/update/${ticketId}`,
+    {
+      status: "CANCEL",
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+}
 
 // 탑승하기
 /*
@@ -199,18 +192,20 @@ export function deleteTicketAxios(token, ticketId) {
 {
     "ticketId": 3
   }
- */ 
-  export function setRidingAxios(token) {
-    return (
-      axios.post(`${BASE_URL}/ride/new`, {
-        ticketId: 7,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      })
-    )
-  }
+ */
+export function setRidingAxios(token) {
+  return axios.post(
+    `${BASE_URL}/ride/new`,
+    {
+      ticketId: 7,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+}
 /*
 2. 내리기 -> /ride/delete    -> POST
 {
@@ -219,31 +214,29 @@ export function deleteTicketAxios(token, ticketId) {
 */
 // 이름 수정 할것
 export function getOutAxios(token) {
-  return (
-    axios.post(`${BASE_URL}/ride/delete`, {
+  return axios.post(
+    `${BASE_URL}/ride/delete`,
+    {
       passengerId: 2,
-    }, {
+    },
+    {
       headers: {
         Authorization: `Bearer ${token}`,
-      }
-    })
-  )
+      },
+    }
+  );
 }
 
 // ticket/promise
 export function readPromiseAxios(token) {
-  return (
-    axios.get(`${BASE_URL}/ticket/promise`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    })  
-  )
+  return axios.get(`${BASE_URL}/ticket/promise`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 }
 
-
 // 탑승 리스트
-
 
 /*
     // 탑승 리스트 성공하면 밑에 형식처럼 되어 있다.
@@ -321,16 +314,26 @@ export function readInquiryAxios(token) {
   });
 }
 
-// 신고 하기 
-export function setDiclationAxios(token, writerStudentId, writerEmail, reportStudentId, content) {
-  return axios.post(`${BASE_URL}/ReportBoard/new`, {
-    writerStudentId: writerStudentId,
-    writerEmail: writerEmail,
-    reportStudentId: reportStudentId,
-    content: content,
-  }, {
-    headers: {
-      Authorization: `Bearer ${token}`,
+// 신고 하기
+export function setDiclationAxios(
+  token,
+  writerStudentId,
+  writerEmail,
+  reportStudentId,
+  content
+) {
+  return axios.post(
+    `${BASE_URL}/ReportBoard/new`,
+    {
+      writerStudentId: writerStudentId,
+      writerEmail: writerEmail,
+      reportStudentId: reportStudentId,
+      content: content,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     }
-  });
+  );
 }

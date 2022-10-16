@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+
 import { readTicketAxios, setRidingAxios } from "../../config/axiosAPI";
 
 export default function TicketDetail({ navigation, route }) {
@@ -65,9 +66,14 @@ export default function TicketDetail({ navigation, route }) {
               </View>
             </View>
           </View>
-          <TouchableOpacity 
-            
-            onPress={() => setRidingAxios("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQzNzAzOTksImV4cCI6MTY2NDQ1Njc5OX0.UFhS1n1bbcnTkLPPCjeOSyl7njSGz5LtCPswDoymou8o1QV1bTt7GkSLdzEubl7yZFbyN-5tOW9CR-DYu8kdcQ").then(res => console.log("탑승하기 클릭시 서버로 전송 : ", res))}
+          <TouchableOpacity
+            onPress={() =>
+              setRidingAxios(
+                "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQzNzAzOTksImV4cCI6MTY2NDQ1Njc5OX0.UFhS1n1bbcnTkLPPCjeOSyl7njSGz5LtCPswDoymou8o1QV1bTt7GkSLdzEubl7yZFbyN-5tOW9CR-DYu8kdcQ"
+              ).then((res) =>
+                console.log("탑승하기 클릭시 서버로 전송 : ", res)
+              )
+            }
             style={styles.footer}
           >
             <View style={styles.button_container_next_button}>

@@ -1,13 +1,13 @@
 // 학번로그인 -> 회원가입 버튼 클릭하면 회원가입 페이지 화면으로 넘어간다.
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
+  Image,
   Platform,
   Dimensions,
-  Alert,
 } from "react-native";
 
 // 아이콘
@@ -32,41 +32,24 @@ import {
 
 //SVG
 import Svg, { Path, G, Mask, Rect } from "react-native-svg";
+import { getOutAxios } from "../../config/axiosAPI";
 
-// 클립보드
-import * as Clipboard from "expo-clipboard";
-import {
-  deleteTicketAxios,
-  getBordingListAxios,
-  updateTicketAxios,
-} from "../../config/axiosAPI";
+export default function PassengerBordingList({ navigation, route }) {
+  // 탑승 종료 state
+  const [finish, setFinish] = useState(false);
 
-export default function BordingList({ navigation, route }) {
-  // useRef
-  const userTokenRef = useRef(route.params.token);
-  const [ticketList, setTicketList] = useState();
-  //const ticketListRef = useRef();
-
-  const [loading, setLoading] = useState(true);
-
-  useEffect(async () => {
-    getBordingListAxios(userTokenRef.current)
-      .then((res) => {
-        console.log("탑승리스트 res : ", res.data);
-        setTicketList(res.data);
-        //ticketListRef.current = res.data;
-        setLoading(false);
-      })
-      .catch((error) => console.warn(error));
-  }, []);
-
-  // state
-  const [copiedText, setCopiedText] = React.useState("");
+  // 탑승 종료 이벤트
+  const onFinish = () => {
+    setFinish(!finish);
+    getOutAxios(
+      "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2NCIsImlzcyI6ImNhcnBvb2wgYXBwIiwiaWF0IjoxNjY0Mjk2NjYxLCJleHAiOjE2NjQzODMwNjF9.u9t5yl5593qEzgiYAeBBlhCTXdWFW0n7D3h2odquAwuLQNfvMjpjO2JQiAWbSrJrZRXF4p0x-ng8_xBgqtNoNA"
+    )
+      .then((res) => console.log("내리기 클릭시 서버로 전송 : ", res))
+      .catch((error) => console.log("error data : ", error.response.data));
+  };
 
   const deviceWidth = Dimensions.get("window").width;
   const deviceHeight = Dimensions.get("window").height;
-
-  const token = `eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzIiwiaXNzIjoiY2FycG9vbCBhcHAiLCJpYXQiOjE2NjQxMDk0MDAsImV4cCI6MTY2NDE5NTgwMH0.Go0keCeAKi3fTzsB3RNhHMVBAZupn_MCkuT0FC-vbnXYRjSB0ik88xbUGzWovx-Bgx4x8if9LfwRbMFIb-V0GA`;
 
   // font 설정
   let [fontLoaded] = useFonts({
@@ -79,61 +62,6 @@ export default function BordingList({ navigation, route }) {
   if (!fontLoaded) {
     return null;
   }
-
-  // 티켓 삭제 Alert창 보여주는 함수
-  const ticketDeleteAlert = () =>
-    Alert.alert(
-      "카풀 삭제 하시겠습니까?",
-      `드라이버의 일방적 삭제로 인한${"\n"}신고가 3회 이상 누적되면${"\n"}서비스 이용에 제한이 있을 수 있습니다.카풀을 삭제하시겠습니까?`,
-      [
-        {
-          text: "취소",
-          style: "cancel",
-        },
-        {
-          text: "삭제",
-          onPress: () => {
-            console.log("ticket id : ", ticketList);
-            updateTicketAxios(userTokenRef.current, 8)
-              .then((res) => {
-                console.log("ticket delecte res : ", res);
-                navigation.navigate("Main", route.params);
-              })
-              .catch((error) => console.warn(error));
-          },
-          style: "destructive",
-        },
-      ],
-      { cancelable: false }
-    );
-
-  // 운행 종료 Alert창 보여주는
-  const driveFinishAlert = () =>
-    Alert.alert(
-      "운행 종료하겠습니까?",
-      `유료 운행의 경우 오전 7~9시,${"\n"}오후 6~8시까지 운행을 종료해야 합니다.${"\n"}${"\n"}운행 종료하시겠습니까?`,
-      [
-        {
-          text: "취소",
-          style: "cancel",
-        },
-        {
-          text: "종료",
-          onPress: () => {
-            navigation.navigate("Main");
-          },
-          style: "destructive",
-        },
-      ],
-      { cancelable: false }
-    );
-
-  // 클립보드 핸들러
-
-  const copyToClipboard = async () => {
-    Clipboard.setString("https://open.kakao.com/o/gB1fw7Ae");
-    alert("오픈채팅 링크 복사 하였습니다.");
-  };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
@@ -154,7 +82,7 @@ export default function BordingList({ navigation, route }) {
           <View style={styles.navbar}>
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate("Main", route.params);
+                navigation.navigate("Main");
               }}
               style={styles.backIcon}
             >
@@ -249,8 +177,7 @@ export default function BordingList({ navigation, route }) {
               </View>
             </View>
 
-            <TouchableOpacity
-              onPress={() => copyToClipboard()}
+            <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -294,7 +221,7 @@ export default function BordingList({ navigation, route }) {
               >
                 1:1 오픈 채팅 참여하기
               </Text>
-            </TouchableOpacity>
+            </View>
           </View>
 
           <View
@@ -321,6 +248,13 @@ export default function BordingList({ navigation, route }) {
                     최수정
                   </Text>
                 </View>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("DiclationScreen")}
+                  style={styles.carpool_list_ticket_display_title_passenger}
+                >
+                  <Feather name="bell" size={24} color="#d8d7d7" />
+                  <Text style={styles.complaint_text}>신고</Text>
+                </TouchableOpacity>
               </View>
             </View>
             <View style={styles.carpool_list_display}>
@@ -345,15 +279,6 @@ export default function BordingList({ navigation, route }) {
                     김수지
                   </Text>
                 </View>
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("DiclationScreen", route.params)
-                  }
-                  style={styles.carpool_list_ticket_display_title_passenger}
-                >
-                  <Feather name="bell" size={24} color="#d8d7d7" />
-                  <Text style={styles.complaint_text}>신고</Text>
-                </TouchableOpacity>
               </View>
               <View style={styles.carpool_list_display_title}>
                 <View
@@ -409,28 +334,15 @@ export default function BordingList({ navigation, route }) {
           </View>
         </View>
         <View style={styles.footer}>
-          <View style={styles.finish_button_container}>
+          <View style={styles.button_container}>
             <TouchableOpacity
-              onPress={ticketDeleteAlert}
-              style={[
-                styles.finish_button_container_cancle_button,
-                { marginRight: 15 },
-              ]}
-            >
-              <Text
-                style={{ color: "#007AFF", fontWeight: "bold", fontSize: 15 }}
-              >
-                티켓 삭제
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={driveFinishAlert}
-              style={styles.finish_button_container_button}
+              onPress={onFinish}
+              style={styles.button_container_next_button}
             >
               <Text
                 style={{ color: "#FFFFFF", fontWeight: "bold", fontSize: 15 }}
               >
-                운행 종료
+                내리기
               </Text>
             </TouchableOpacity>
           </View>
@@ -578,11 +490,11 @@ const styles = StyleSheet.create({
 
   button_container: {
     justifyContent: "center",
-    marginBottom: 10,
   },
 
   finish_button_container: {
     justifyContent: "center",
+    marginBottom: 10,
     flexDirection: "row",
   },
 
@@ -592,8 +504,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 25,
-    marginLeft: 15,
-    marginRight: 15,
+    marginLeft: 25,
+    marginRight: 25,
+    marginTop: 30,
   },
 
   finish_button_container_button: {

@@ -7,6 +7,7 @@ import {
   View,
   ScrollView,
 } from "react-native";
+
 import { useIsFocused } from "@react-navigation/native";
 
 // 아이콘(원격주소) 불러오기
@@ -15,7 +16,7 @@ import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SCREEN_HEIGHT } from "@gorhom/bottom-sheet";
 import Svg, { Path } from "react-native-svg";
-import axios from "axios";
+
 import {
   getMemberAxios,
   getTicketListAxios,
@@ -321,7 +322,7 @@ export default function Main({ navigation, route }) {
                     if (memberData.auth === "DRIVER") {
                       navigation.navigate("BordingList", route.params);
                     } else {
-                      navigation.navigate("PesingerBordingList", route.params);
+                      navigation.navigate("PassengerBordingList", route.params);
                     }
                   }}
                 >
@@ -340,7 +341,7 @@ export default function Main({ navigation, route }) {
                   style={{
                     backgroundColor: "#007AFF",
                     height: 55,
-                    justifyContent: "center",                    
+                    justifyContent: "center",
                     borderRadius: 35,
                     marginBottom: 20,
                   }}
@@ -348,14 +349,25 @@ export default function Main({ navigation, route }) {
                     if (memberData.auth === "DRIVER") {
                       navigation.navigate("BordingList", route.params);
                     } else {
-                      navigation.navigate("PesingerBordingList", route.params);
+                      navigation.navigate("PassengerBordingList", route.params);
                     }
                   }}
                 >
-                  <View style={{flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', }}>
-                    <View style={{backgroundColor: '#D9D9D9', width: 40, height: 40, borderRadius: 30}}>
-
-                    </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-evenly",
+                      alignItems: "center",
+                    }}
+                  >
+                    <View
+                      style={{
+                        backgroundColor: "#D9D9D9",
+                        width: 40,
+                        height: 40,
+                        borderRadius: 30,
+                      }}
+                    ></View>
                     <View>
                       <Text
                         style={{
@@ -364,10 +376,18 @@ export default function Main({ navigation, route }) {
                           fontSize: 16,
                         }}
                       >
-                        {`${promise.startDtime[4]}월 ${promise.startDtime.slice(5, 7)}일, ${promise.startDtime.slice(9,11)}시 ${promise.startDtime.slice(11,13)}분 예약`}
+                        {`${promise.startDtime[4]}월 ${promise.startDtime.slice(
+                          5,
+                          7
+                        )}일, ${promise.startDtime.slice(
+                          9,
+                          11
+                        )}시 ${promise.startDtime.slice(11, 13)}분 예약`}
                       </Text>
-                      <View style={{width: 170}}>
-                        <Text style={{color: '#FFFFFF'}}>{`${promise.startArea} 출발`}</Text>
+                      <View style={{ width: 170 }}>
+                        <Text
+                          style={{ color: "#FFFFFF" }}
+                        >{`${promise.startArea} 출발`}</Text>
                       </View>
                     </View>
                     <View>
@@ -491,7 +511,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#3B67FF",
   },
 
-  carpool_list_ticket_display_title_pesinger: {
+  carpool_list_ticket_display_title_Passenger: {
     width: 37,
     height: 21,
     backgroundColor: "#A8BBFF",
@@ -518,7 +538,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  DriverPesingerModal: {
+  DriverPassengerModal: {
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
@@ -526,7 +546,7 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
 
-  DriverPesingerModalView: {
+  DriverPassengerModalView: {
     backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,

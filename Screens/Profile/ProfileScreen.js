@@ -1,7 +1,8 @@
 // 모듈 불러오는 부분, 현재 수정중
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { useIsFocused } from '@react-navigation/native';
+
+import { useIsFocused } from "@react-navigation/native";
 // 아이콘
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,10 +15,9 @@ import {
   Archivo_800ExtraBold,
 } from "@expo-google-fonts/archivo"; // mate 로고
 import {
-  NotoSansKR_400Regular,
-  NotoSansKR_500Mediu,
   NotoSansKR_100Thin,
   NotoSansKR_300Light,
+  NotoSansKR_400Regular,
   NotoSansKR_500Medium,
   NotoSansKR_700Bold,
   NotoSansKR_900Black,
@@ -45,7 +45,7 @@ export default function ProfileScreen({ navigation, route }) {
 
   const userTokenRef = useRef(route.params.token);
 
-  const [loaidng, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const [member, setMember] = useState();
 
@@ -59,13 +59,11 @@ export default function ProfileScreen({ navigation, route }) {
     //     }
     // });
 
-    getProfileAxios(userTokenRef.current)
-    .then(res => {
+    getProfileAxios(userTokenRef.current).then((res) => {
       setMember(res.data);
       console.log("profile member read : ", res.data);
       setLoading(false);
-    })
-
+    });
 
     /*
     getProfileImgAxios("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2NCIsImlzcyI6ImNhcnBvb2wgYXBwIiwiaWF0IjoxNjY0MjkzMjEyLCJleHAiOjE2NjQzNzk2MTJ9.OEaGA5x6BW9-AJyr3Pjjg0m6_Qdmo-VL-zpGHkRRIpq_PHszx8Oo8n--BW6NDdXdZRVl-yU-6ABU7rDhlRR_Ew", "/64/bb1469ad3d21a04760cf719a86f2e7be.jpeg")
@@ -108,7 +106,7 @@ export default function ProfileScreen({ navigation, route }) {
           <Text style={styles.logo_text}>MATE</Text>
         </TouchableOpacity>
       </View>
-      {loaidng === false ? (
+      {loading === false ? (
         <View style={styles.main}>
           <View style={{ marginBottom: 20 }}>
             <View
@@ -122,7 +120,12 @@ export default function ProfileScreen({ navigation, route }) {
               <View style={{ flexDirection: "row" }}>
                 {member.profileImage !== null || "" ? (
                   <Image
-                    style={{ width: 50, height: 50, borderRadius: 30, marginRight: 10 }}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 30,
+                      marginRight: 10,
+                    }}
                     source={{
                       uri: `${BASE_URL}/member/profile${member.profileImage}`,
                     }}
@@ -412,7 +415,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#3B67FF",
   },
 
-  carpool_list_ticket_display_title_pesinger: {
+  carpool_list_ticket_display_title_passenger: {
     width: 37,
     height: 21,
     backgroundColor: "#A8BBFF",
